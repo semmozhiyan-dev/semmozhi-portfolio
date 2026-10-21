@@ -1,58 +1,37 @@
 {
-  "$schema": "https://agentcatalog.org/schemas/v1/ai-catalog.json",
-  "version": "1.0.0",
-  "name": "The Tale Of Semmozhiyan",
-  "description": "AI Agent catalog and capability discovery manifest for Semmozhiyan N S — Site Reliability Engineer & Developer.",
-  "url": "https://portfolio.vendore.tech",
-  "owner": {
-    "name": "Semmozhiyan N S",
-    "email": "semmozhiyan40@gmail.com",
-    "url": "https://portfolio.vendore.tech"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "specVersion": "1.0",
+  "host": {
+    "domain": "portfolio.vendore.tech"
   },
-  "resources": [
+  "entries": [
     {
-      "id": "llms-txt",
-      "type": "documentation",
-      "name": "LLM Knowledge Base",
+      "@context": "https://agenticresourcediscovery.org/context/v1",
+      "identifier": "urn:air:portfolio.vendore.tech:tools:contact-semmozhiyan",
+      "displayName": "Contact Semmozhiyan SRE",
+      "type": "application/mcp-server-card+json",
+      "description": "Direct communication endpoint for Site Reliability Engineering collaboration, recruitment, and cloud consultations.",
+      "url": "https://portfolio.vendore.tech/.well-known/mcp-server-card.json",
+      "tags": ["sre", "site-reliability-engineering", "devops", "cloud", "contact"],
+      "representativeQueries": [
+        "Contact Semmozhiyan N S",
+        "Hire Site Reliability Engineer Semmozhiyan",
+        "Send an engineering collaboration inquiry to Semmozhiyan"
+      ]
+    },
+    {
+      "@context": "https://agenticresourcediscovery.org/context/v1",
+      "identifier": "urn:air:portfolio.vendore.tech:docs:llms-knowledge",
+      "displayName": "Semmozhiyan Knowledge Base",
+      "type": "text/markdown",
+      "description": "Structured biographical, engineering, and product portfolio knowledge base for LLMs.",
       "url": "https://portfolio.vendore.tech/llms.txt",
-      "format": "text/markdown"
-    },
-    {
-      "id": "llms-full-txt",
-      "type": "documentation",
-      "name": "Comprehensive Knowledge Base",
-      "url": "https://portfolio.vendore.tech/llms-full.txt",
-      "format": "text/markdown"
-    },
-    {
-      "id": "sitemap",
-      "type": "sitemap",
-      "name": "XML Sitemap",
-      "url": "https://portfolio.vendore.tech/sitemap.xml",
-      "format": "application/xml"
-    }
-  ],
-  "tools": [
-    {
-      "id": "contact_semmozhiyan",
-      "name": "Contact Semmozhiyan",
-      "description": "Send a direct inquiry or collaboration message regarding Site Reliability Engineering roles or cloud consulting.",
-      "type": "form",
-      "endpoint": "https://portfolio.vendore.tech/#contact",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "subject": {
-            "type": "string",
-            "description": "Topic or category of inquiry"
-          },
-          "message": {
-            "type": "string",
-            "description": "Details of the inquiry or project context"
-          }
-        },
-        "required": ["subject", "message"]
-      }
+      "tags": ["knowledge-base", "portfolio", "sre", "biography"],
+      "representativeQueries": [
+        "Who is Semmozhiyan N S",
+        "What are Semmozhiyan's skills and projects",
+        "Tell me about Semmozhiyan's work at NexGenAds Technologies"
+      ]
     }
   ]
 }

@@ -1,0 +1,29 @@
+{
+  "@context": "https://agenticresourcediscovery.org/context/v1",
+  "specVersion": "1.0",
+  "name": "contact-semmozhiyan",
+  "displayName": "Contact Semmozhiyan SRE",
+  "description": "Direct contact tool to send messages to Semmozhiyan N S regarding Site Reliability Engineering, cloud architectures, and software development.",
+  "endpoint": "https://formspree.io/f/mwpbjoad",
+  "transport": "http",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "subject": {
+        "type": "string",
+        "description": "Category or topic of inquiry",
+        "enum": [
+          "Site Reliability Engineering Collaboration",
+          "Career Opportunity / SRE Position",
+          "Cloud Architecture & Deployment Consultation",
+          "General Conversation"
+        ]
+      },
+      "message": {
+        "type": "string",
+        "description": "Inquiry context or message details"
+      }
+    },
+    "required": ["subject", "message"]
+  }
+}
