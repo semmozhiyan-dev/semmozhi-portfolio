@@ -272,9 +272,9 @@ const Navigation = ({ activeSection, onOpenResume }) => {
         
         {/* Brand: The Tale Of Semmozhiyan */}
         <a href="#about" className="flex items-center gap-3.5 group">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--accent-wine)] to-[var(--accent-ruby)] flex items-center justify-center text-white shadow-wine-sm border border-white/10 group-hover:scale-105 transition-transform duration-300">
+          {/* <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--accent-wine)] to-[var(--accent-ruby)] flex items-center justify-center text-white shadow-wine-sm border border-white/10 group-hover:scale-105 transition-transform duration-300">
             <span className="font-serif font-black text-sm tracking-wider">S</span>
-          </div>
+          </div> */}
           <div className="flex flex-col">
             <span className="font-serif font-bold text-base sm:text-lg tracking-wide text-[var(--text-primary)] group-hover:gradient-text transition-all">
               The Tale Of Semmozhiyan
