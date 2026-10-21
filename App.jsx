@@ -37,6 +37,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import profileImg from './semmozhi.jpeg';
+import profileWebp from './semmozhi.webp';
 import JourneyPage from './JourneyPage.jsx';
 import LessonsPage from './LessonsPage.jsx';
 
@@ -44,6 +45,7 @@ import LessonsPage from './LessonsPage.jsx';
 
 const TiltCard3D = ({ children, className = "", onClick, ...props }) => {
   const cardRef = React.useRef(null);
+  const rectRef = React.useRef(null);
   
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -57,30 +59,35 @@ const TiltCard3D = ({ children, className = "", onClick, ...props }) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const [glarePos, setGlarePos] = React.useState({ x: 50, y: 50 });
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (cardRef.current) {
+      rectRef.current = cardRef.current.getBoundingClientRect();
+    }
+  };
+
   const handleMouseMove = (e) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
+    const rect = rectRef.current;
+    if (!rect || rect.width === 0 || rect.height === 0) return;
 
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
+    const xPct = mouseX / rect.width - 0.5;
+    const yPct = mouseY / rect.height - 0.5;
 
     x.set(xPct);
     y.set(yPct);
 
     setGlarePos({
-      x: (mouseX / width) * 100,
-      y: (mouseY / height) * 100,
+      x: (mouseX / rect.width) * 100,
+      y: (mouseY / rect.height) * 100,
     });
   };
 
-  const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => {
     setIsHovered(false);
+    rectRef.current = null;
     x.set(0);
     y.set(0);
   };
@@ -459,12 +466,20 @@ const Hero = ({ onOpenResume }) => {
               <TiltCard3D className="shadow-card-3d">
                 {/* Image Container */}
                 <div className="relative rounded-[22px] overflow-hidden bg-[#0A070D] aspect-[3/4]">
-                  <img
-                    src={profileImg}
-                    alt="Semmozhiyan — Site Reliability Engineer"
-                    onError={(e) => { e.target.onerror = null; e.target.src = "https://github.com/semmozhiyan-dev.png"; }}
-                    className="w-full h-full object-cover object-center filter contrast-[1.05] brightness-[0.92] hover:scale-105 transition-transform duration-700 ease-out"
-                  />
+                  <picture>
+                    <source srcSet={profileWebp} type="image/webp" />
+                    <img
+                      src={profileImg}
+                      alt="Semmozhiyan — Site Reliability Engineer"
+                      width="720"
+                      height="960"
+                      fetchpriority="high"
+                      loading="eager"
+                      decoding="async"
+                      onError={(e) => { e.target.onerror = null; e.target.src = "https://github.com/semmozhiyan-dev.png"; }}
+                      className="w-full h-full object-cover object-center filter contrast-[1.05] brightness-[0.92] hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                  </picture>
                   
                   {/* Subtle Gradient Veil */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050406] via-[#050406]/20 to-transparent opacity-85" />
@@ -1273,17 +1288,28 @@ const Contact = () => {
                 </motion.div>
               ) : (
                 <form
+                  id="contact-form"
+                  name="contact_semmozhiyan"
+                  data-webmcp-tool="contact_semmozhiyan"
+                  data-webmcp-description="Contact Semmozhiyan N S regarding Site Reliability Engineering roles, cloud architecture, or software engineering."
                   className="space-y-6"
                   action="https://formspree.io/f/mwpbjoad"
                   method="POST"
                   onSubmit={handleSubmit}
                 >
                   <div>
-                    <label className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
+                    <label
+                      htmlFor="contact-subject"
+                      className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider"
+                    >
                       Subject Matter
                     </label>
                     <select
+                      id="contact-subject"
                       name="subject"
+                      aria-label="Subject Matter"
+                      data-webmcp-param="subject"
+                      data-webmcp-param-description="Topic or category of inquiry"
                       value={formData.subject}
                       onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                       className="w-full bg-[#050406] border border-[var(--border-subtle)] focus:border-[var(--accent-ruby)] p-4 text-xs rounded-2xl outline-none text-[var(--text-primary)] font-mono transition-colors"
@@ -1296,11 +1322,18 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <label className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
+                    <label
+                      htmlFor="contact-message"
+                      className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider"
+                    >
                       Message Content
                     </label>
                     <textarea
+                      id="contact-message"
                       name="message"
+                      aria-label="Message Content"
+                      data-webmcp-param="message"
+                      data-webmcp-param-description="Context and message details of inquiry"
                       rows="5"
                       required
                       value={formData.message}

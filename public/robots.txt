@@ -9,6 +9,7 @@ Allow: /llms.txt
 Allow: /llms-full.txt
 Allow: /sitemap.xml
 Allow: /manifest.json
+Allow: /ai-catalog.json
 
 # Explicit Permissions for AI Search Engines & Knowledge Crawlers (GEO & AEO)
 User-agent: GPTBot

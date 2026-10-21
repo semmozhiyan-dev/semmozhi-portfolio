@@ -62,10 +62,46 @@
     <link rel="icon" type="image/jpeg" href="/og-image.jpeg">
     <link rel="apple-touch-icon" href="/og-image.jpeg">
 
-    <!-- Typography (Google Fonts) -->
+    <!-- Typography (Google Fonts) Asynchronous Preload to Prevent Render-Blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap">
+    </noscript>
+
+    <!-- WebMCP Tool Declaration for AI Agents -->
+    <script type="application/webmcp+json">
+    {
+      "tools": [
+        {
+          "name": "contact_semmozhiyan",
+          "description": "Send a direct message or collaboration inquiry to Semmozhiyan N S regarding Site Reliability Engineering opportunities or collaboration.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "subject": {
+                "type": "string",
+                "description": "Topic or inquiry type",
+                "enum": [
+                  "Site Reliability Engineering Collaboration",
+                  "Career Opportunity / SRE Position",
+                  "Cloud Architecture & Deployment Consultation",
+                  "General Conversation"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "description": "Details of the inquiry or project context"
+              }
+            },
+            "required": ["subject", "message"]
+          }
+        }
+      ]
+    }
+    </script>
 
     <!-- GEO, AEO & AI Engine Optimization (JSON-LD Knowledge Graph) -->
     <script type="application/ld+json">

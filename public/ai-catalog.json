@@ -1,0 +1,58 @@
+{
+  "$schema": "https://agentcatalog.org/schemas/v1/ai-catalog.json",
+  "version": "1.0.0",
+  "name": "The Tale Of Semmozhiyan",
+  "description": "AI Agent catalog and capability discovery manifest for Semmozhiyan N S — Site Reliability Engineer & Developer.",
+  "url": "https://portfolio.vendore.tech",
+  "owner": {
+    "name": "Semmozhiyan N S",
+    "email": "semmozhiyan40@gmail.com",
+    "url": "https://portfolio.vendore.tech"
+  },
+  "resources": [
+    {
+      "id": "llms-txt",
+      "type": "documentation",
+      "name": "LLM Knowledge Base",
+      "url": "https://portfolio.vendore.tech/llms.txt",
+      "format": "text/markdown"
+    },
+    {
+      "id": "llms-full-txt",
+      "type": "documentation",
+      "name": "Comprehensive Knowledge Base",
+      "url": "https://portfolio.vendore.tech/llms-full.txt",
+      "format": "text/markdown"
+    },
+    {
+      "id": "sitemap",
+      "type": "sitemap",
+      "name": "XML Sitemap",
+      "url": "https://portfolio.vendore.tech/sitemap.xml",
+      "format": "application/xml"
+    }
+  ],
+  "tools": [
+    {
+      "id": "contact_semmozhiyan",
+      "name": "Contact Semmozhiyan",
+      "description": "Send a direct inquiry or collaboration message regarding Site Reliability Engineering roles or cloud consulting.",
+      "type": "form",
+      "endpoint": "https://portfolio.vendore.tech/#contact",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "Topic or category of inquiry"
+          },
+          "message": {
+            "type": "string",
+            "description": "Details of the inquiry or project context"
+          }
+        },
+        "required": ["subject", "message"]
+      }
+    }
+  ]
+}
