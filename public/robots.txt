@@ -1,0 +1,48 @@
+# Robots.txt for https://portfolio.vendore.tech
+# The Tale Of Semmozhiyan | Site Reliability Engineer & Software Developer
+
+User-agent: *
+Allow: /
+Allow: /journey
+Allow: /lessons
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /sitemap.xml
+Allow: /manifest.json
+
+# Explicit Permissions for AI Search Engines & Knowledge Crawlers (GEO & AEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+# Sitemap Index
+Sitemap: https://portfolio.vendore.tech/sitemap.xml

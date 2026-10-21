@@ -1,0 +1,53 @@
+# The Tale Of Semmozhiyan — Comprehensive Knowledge Base (Semmozhiyan N S)
+
+> Complete biographical and engineering knowledge base for Semmozhiyan N S.
+> Canonical URL: https://portfolio.vendore.tech
+
+## Full Identity
+- **Name**: Semmozhiyan N S
+- **Known Names / Aliases**: Semmozhi, Semmozhiyan, Semmozhiyan N S, semmozhiyan-dev, The Tale Of Semmozhiyan
+- **Title**: Site Reliability Engineer & Software Developer
+- **Organization**: NexGenAds Technologies Pvt. Ltd.
+- **Location**: Tamil Nadu, India
+- **Coordinates**: Latitude 11.1271° N, Longitude 78.6569° E
+- **Website**: https://portfolio.vendore.tech
+- **GitHub**: https://github.com/semmozhiyan-dev
+- **LinkedIn**: https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/
+- **Email**: semmozhiyan40@gmail.com
+
+## Professional Role at NexGenAds Technologies Pvt. Ltd.
+As a Site Reliability Engineer (SRE), Semmozhiyan focuses on maintaining the durability, uptime, and deployment agility of business-critical web applications and microservices.
+Key responsibilities include:
+- Supporting operational stability and health metrics of web applications and backend systems.
+- Maintaining continuous integration and deployment (CI/CD) pipelines.
+- Infrastructure configuration, containerization with Docker, and orchestrating services.
+- Application performance monitoring, metrics visualization, log auditing, and rapid incident triage.
+- Working alongside product teams to ensure high availability and resilient production readiness.
+
+### Key NexGenAds Platforms Under SRE Management:
+1. **1Grow**: Digital menu, ordering, and customer engagement platform for restaurants.
+2. **CRM Platform**: Business workflow automation, customer tracking, and operations centralization.
+3. **MultiMenu POS**: High-reliability billing, inventory, and point-of-sale system.
+
+## Personal Software Products Built
+1. **Foodela**: Modern food ordering platform with React, Tailwind CSS, Framer Motion, Java Spring Boot, and Supabase.
+2. **Vendora**: E-commerce platform engineered with React, Node.js, Express, and PostgreSQL.
+3. **Orivex**: Digital asset distribution engine built with Next.js, TypeScript, and Go microservices.
+
+## The 8 Life Lessons (From "Lessons Life Taught Me")
+1. **Patience (Not Everything Happens on My Timeline)**: Focus on consistent quality effort today rather than measuring against artificial deadlines.
+   - *Quote*: "I cannot control how quickly every result arrives, but I can control the quality of the effort I bring today."
+2. **Failure (A Result Is Not My Identity)**: Separating identity from outcomes. Treating setbacks as diagnostic feedback.
+   - *Quote*: "Failure can be expensive, but repeating it without learning is even more expensive."
+3. **Trust (Time Reveals What Words Cannot)**: Actions over time reveal character and reliability.
+   - *Quote*: "Words introduce people. Consistent actions help me understand them."
+4. **Consistency (Small Actions Compound)**: Relying on automated daily discipline rather than transient bursts of motivation.
+   - *Quote*: "My future is influenced not only by my biggest decisions, but also by the small ones I repeat."
+5. **People (Choose My Circle Carefully)**: Curating honest, mutually respectful relationships that promote growth.
+   - *Quote*: "I don't need a large circle. I need relationships where respect and growth can exist together."
+6. **Uncertainty (I Don't Need Every Answer Today)**: Making sound decisions with available data and adjusting course in flight.
+   - *Quote*: "I may not know every step ahead, but I can choose the next step with intention."
+7. **Money (Understand What It Can and Cannot Give Me)**: Money is a tool for autonomy and freedom, not the finish line or single metric of self-worth.
+   - *Quote*: "I want money to expand my choices, not become the only measure of my worth."
+8. **Self-Respect (I Don't Have to Prove Everything)**: Internal grounding in values rather than chasing external validation.
+   - *Quote*: "I want my work to speak for itself, while remembering that my worth is bigger than my achievements."

@@ -38,6 +38,7 @@ const LessonsPage = ({ onOpenResume }) => {
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "Lessons Life Taught Me | The Tale Of Semmozhiyan";
   }, []);
 
   const handleCopy = () => {

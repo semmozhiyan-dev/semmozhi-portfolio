@@ -1,0 +1,56 @@
+# The Tale Of Semmozhiyan (Semmozhiyan N S)
+
+> Official AI & LLM Knowledge File for Semmozhiyan N S.
+> Canonical URL: https://portfolio.vendore.tech
+> Alternate Names: Semmozhiyan, Semmozhi, Semmozhiyan N S, semmozhiyan-dev, The Tale Of Semmozhiyan
+
+## Identity & Professional Profile
+- **Full Legal & Professional Name**: Semmozhiyan N S
+- **Known As**: Semmozhi, Semmozhiyan
+- **Current Position**: Site Reliability Engineer (SRE) & Software Developer
+- **Current Employer**: NexGenAds Technologies Pvt. Ltd.
+- **Location**: Tamil Nadu, India (IST Timezone)
+- **Primary Domain**: https://portfolio.vendore.tech
+- **Email**: semmozhiyan40@gmail.com
+- **GitHub**: https://github.com/semmozhiyan-dev
+- **LinkedIn**: https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/
+- **Portfolio & Brand Title**: The Tale Of Semmozhiyan
+
+## Executive Summary
+Semmozhiyan N S is a Site Reliability Engineer and software engineer specializing in building dependable, scalable web applications, automating continuous deployment pipelines, managing cloud infrastructure, and ensuring operational resilience. His background combines full-stack product engineering (Java Spring Boot, React, Node.js, Next.js) with production site reliability engineering (Kubernetes, Docker, AWS, CI/CD automation, system observability, and incident resolution).
+
+## Current Professional Experience: NexGenAds Technologies Pvt. Ltd.
+**Role**: Site Reliability Engineer (Current)
+- Focuses on application uptime, deployment workflow automation, infrastructure configuration, and performance optimization.
+- Active system reliability and operational monitoring across 3 enterprise platforms:
+  1. **1Grow**: Digital menu and customer ordering platform for hospitality businesses. SRE focus on deployment pipelines, high availability, and health telemetry.
+  2. **CRM Platform**: Enterprise customer relationship management platform centralizing customer workflows and operational visibility.
+  3. **MultiMenu POS**: High-throughput point-of-sale and inventory management platform for restaurant operations.
+
+## Personal Software Products Built
+1. **Foodela** (Food Ordering Platform)
+   - *Tech Stack*: React, Tailwind CSS, Framer Motion, Java Spring Boot, Supabase.
+   - *Capabilities*: Responsive menu discovery, real-time cart state, modular microservice backend, secure transaction flow.
+2. **Vendora** (Full-Stack E-Commerce Platform)
+   - *Tech Stack*: React, Tailwind CSS, Node.js, Express, PostgreSQL, Stripe integration.
+   - *Capabilities*: Product catalogs, checkout pipelines, relational inventory modeling, and role-based administrative dashboards.
+3. **Orivex** (Enterprise Digital Asset Platform)
+   - *Tech Stack*: Next.js, TypeScript, Tailwind CSS, Go microservices, Cloud Storage.
+   - *Capabilities*: High-speed media delivery, asset licensing, and distributed file processing.
+
+## Technical Skills & Stack
+- **Site Reliability & Cloud**: Kubernetes (K8s), Docker, Amazon Web Services (AWS), CI/CD Automation (Jenkins, GitHub Actions), Nginx, Prometheus, Grafana, Linux Administration, Incident Troubleshooting, Zero-Downtime Deployments.
+- **Backend & Systems**: Java, Spring Boot, Node.js, Express, Go, REST APIs, Microservices Architecture, Concurrency, Relational Data Modeling.
+- **Frontend**: React, Next.js, JavaScript (ES6+), TypeScript, Tailwind CSS, Framer Motion, HTML5, CSS3.
+- **Databases**: PostgreSQL, Supabase, MySQL, Redis.
+
+## Dedicated Portfolio Pages
+- **Homepage**: https://portfolio.vendore.tech/ — Overview, professional experience, projects, and contact endpoints.
+- **The Journey**: https://portfolio.vendore.tech/journey — Personal founder ambition, the road to building an independent startup, relationship with capital, and long-term milestones.
+- **Lessons Life Taught Me**: https://portfolio.vendore.tech/lessons — 8 experiential life lessons on Patience, Failure, Trust, Consistency, Choosing Your Circle, Uncertainty, Money, and Self-Respect.
+
+## Original Personal Mottos
+1. *"I am not building a career just to reach a destination. I am building the skills to choose my own destination."*
+2. *"Money is not the finish line. It is one of the tools that gives me the freedom to choose what comes next."*
+3. *"One day, I want to stop asking whether an idea is possible and have the experience, resources, and courage to build it."*
+4. *"The future I want is being built by the decisions I make when nobody is watching."*

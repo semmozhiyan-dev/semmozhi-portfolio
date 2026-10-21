@@ -1,0 +1,17 @@
+{
+  "name": "The Tale Of Semmozhiyan | Site Reliability Engineer",
+  "short_name": "Semmozhiyan",
+  "description": "Portfolio of Semmozhiyan N S — Site Reliability Engineer at NexGenAds Technologies Pvt. Ltd. Cloud engineering, CI/CD automation, and distributed systems.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050406",
+  "theme_color": "#781223",
+  "icons": [
+    {
+      "src": "/og-image.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

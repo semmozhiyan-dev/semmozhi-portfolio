@@ -1584,6 +1584,10 @@ const FloatingActions = ({ onOpenCmd, onOpenResume }) => {
 // --- Home Page Component ---
 
 const HomePage = ({ onOpenResume }) => {
+  React.useEffect(() => {
+    document.title = "The Tale Of Semmozhiyan | Site Reliability Engineer & Software Developer";
+  }, []);
+
   const activeSection = useActiveSection(['about', 'experience', 'projects', 'journey', 'lessons', 'contact']);
 
   return (

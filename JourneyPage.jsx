@@ -35,6 +35,7 @@ const ScrollProgress = () => {
 const JourneyPage = ({ onOpenResume }) => {
   React.useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "The Journey & Founder Ambition | The Tale Of Semmozhiyan";
   }, []);
 
   const chapters = [
