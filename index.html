@@ -273,6 +273,14 @@
             },
             {
               "@type": "Question",
+              "name": "What do clients and colleagues say about working with Semmozhiyan?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Client and colleague testimonials are published on the homepage at https://portfolio.vendore.tech/#testimonials. Each entry is submitted by the reviewer themselves with their name, role, company, star rating and written feedback, and is reviewed for authenticity before it appears. The published entries are also exposed as schema.org Review structured data."
+              }
+            },
+            {
+              "@type": "Question",
               "name": "How can I contact or hire Semmozhiyan N S?",
               "acceptedAnswer": {
                 "@type": "Answer",
@@ -284,6 +292,15 @@
       ]
     }
     </script>
+
+    <!--
+      TESTIMONIAL REVIEW SCHEMA
+      -------------------------------------------------------------------
+      ReviewList / Review structured data is injected at runtime from the
+      live testimonial endpoint (see apps-script/Code.gs and the
+      TESTIMONIALS_API constant in App.jsx), so it always matches the
+      testimonials that are actually published. Nothing to maintain here.
+    -->
 </head>
 <body style="background-color: #050406; color: #F8F7F8;" class="overflow-x-hidden selection:bg-[#781223] selection:text-white">
     <div id="root"></div>

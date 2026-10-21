@@ -34,7 +34,10 @@ import {
   CreditCard,
   Quote,
   TrendingUp,
-  ArrowRight
+  ArrowRight,
+  Star,
+  BadgeCheck,
+  MessageSquareQuote
 } from 'lucide-react';
 import profileImg from './semmozhi.jpeg';
 import profileWebp from './semmozhi.webp';
@@ -256,6 +259,7 @@ const Navigation = ({ activeSection, onOpenResume }) => {
     { id: 'projects', label: 'Projects', href: '#projects' },
     { id: 'journey', label: 'Journey', href: '#journey' },
     { id: 'lessons', label: 'Lessons', href: '#lessons' },
+    { id: 'testimonials', label: 'Testimonials', href: '#testimonials' },
     { id: 'contact', label: 'Contact', href: '#contact' },
   ];
 
@@ -286,14 +290,14 @@ const Navigation = ({ activeSection, onOpenResume }) => {
         </a>
 
         {/* Minimalist Nav Links */}
-        <nav className="hidden md:flex items-center gap-1 bg-[#0E0B11]/70 px-4 py-2 rounded-full border border-[var(--border-subtle)] backdrop-blur-xl">
+        <nav className="hidden md:flex items-center gap-1 max-w-full overflow-x-auto bg-[#0E0B11]/70 px-4 py-2 rounded-full border border-[var(--border-subtle)] backdrop-blur-xl">
           {navItems.map((item) => {
             const isActive = activeSection === item.id;
             return (
               <a
                 key={item.id}
                 href={item.href}
-                className={`relative px-4 py-1.5 font-mono text-[11px] tracking-wider uppercase transition-all duration-300 rounded-full ${
+                className={`relative shrink-0 whitespace-nowrap px-4 py-1.5 font-mono text-[11px] tracking-wider uppercase transition-all duration-300 rounded-full ${
                   isActive ? 'text-white font-semibold' : 'text-[var(--text-secondary)] hover:text-white'
                 }`}
               >
@@ -1200,6 +1204,668 @@ const LessonsPreview = () => {
   );
 };
 
+// --- Testimonials Section (Live — Google Sheets backed) ---
+
+/**
+ * Deployed Google Apps Script Web App URL.
+ * Either set VITE_TESTIMONIALS_API in .env (or Vercel env vars), or paste the
+ * URL below. Deployment steps live in apps-script/Code.gs.
+ */
+const TESTIMONIALS_API =
+  (import.meta.env && import.meta.env.VITE_TESTIMONIALS_API) ||
+  'https://script.google.com/macros/s/AKfycbzrAYFJ2GbilzaYjWQWorsJ-ZC_DEbdJbEEJrpjLhjruraVuaXX60IXX2l-Az3YJJRa/exec';
+
+const testimonialsApiReady = () =>
+  /^https:\/\//i.test(TESTIMONIALS_API) && !/^PASTE_/i.test(TESTIMONIALS_API);
+
+/**
+ * Apps Script answers with an HTML error page instead of JSON when the
+ * deployment is stale, the script has no entry point, or the first run still
+ * needs owner authorisation. Decode those cases into something actionable.
+ */
+const serviceError = (message) => {
+  const error = new Error(message);
+  error.fatal = true;
+  return error;
+};
+
+const readApiResponse = async (response) => {
+  const body = await response.text();
+  let data = null;
+  try {
+    data = JSON.parse(body);
+  } catch {
+    data = null;
+  }
+  if (!data) {
+    if (/Script function not found/i.test(body)) {
+      throw serviceError(
+        'The testimonial script is deployed but has no doGet function. Open the Apps Script editor, paste apps-script/Code.gs, then Deploy > Manage deployments > New version.'
+      );
+    }
+    if (/Sign in|accounts\.google\.com/i.test(body)) {
+      throw serviceError(
+        'The testimonial script needs one owner sign-in to start. Open the endpoint URL in a browser signed in as the sheet owner, then reload.'
+      );
+    }
+    throw serviceError('The testimonial service did not return valid JSON.');
+  }
+  if (!data.ok) throw serviceError(data.error || 'Testimonial service returned an error.');
+  return data;
+};
+
+const withRetry = async (fn, attempts = 3) => {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      // Configuration problems never resolve themselves, so do not burn retries on them.
+      if (error && error.fatal) throw error;
+      if (attempt < attempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 600 * (attempt + 1)));
+      }
+    }
+  }
+  throw lastError;
+};
+
+const fetchTestimonials = async () => {
+  const response = await fetch(`${TESTIMONIALS_API}?t=${Date.now()}`, {
+    method: 'GET',
+    redirect: 'follow',
+    headers: { Accept: 'application/json' }
+  });
+  if (!response.ok) throw new Error('Could not reach the testimonial service.');
+  const data = await readApiResponse(response);
+  return Array.isArray(data.testimonials) ? data.testimonials : [];
+};
+
+const submitTestimonial = async (payload) => {
+  const response = await fetch(TESTIMONIALS_API, {
+    method: 'POST',
+    redirect: 'follow',
+    // text/plain avoids a CORS preflight, which Apps Script cannot answer.
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  const data = await readApiResponse(response);
+  return data;
+};
+
+const formatTestimonialDate = (value) => {
+  if (!value) return '';
+  const parsed = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return '';
+  return parsed.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+};
+
+const Testimonials = () => {
+  const [testimonials, setTestimonials] = React.useState([]);
+  const [status, setStatus] = React.useState('loading');
+  const [statusMessage, setStatusMessage] = React.useState('');
+  const [form, setForm] = React.useState({ name: '', role: '', company: '', rating: 5, feedback: '', website: '' });
+  const [formState, setFormState] = React.useState({ status: 'idle', message: '' });
+  const openedAt = React.useRef(Date.now());
+
+  const load = React.useCallback(async () => {
+    if (!testimonialsApiReady()) {
+      setStatus('unconfigured');
+      return;
+    }
+    try {
+      const data = await withRetry(fetchTestimonials);
+      setTestimonials(data);
+      setStatus('ready');
+      setStatusMessage('');
+    } catch (error) {
+      setStatus((current) => (current === 'ready' ? 'ready' : 'error'));
+      setStatusMessage(error.message || 'Testimonials are unavailable right now.');
+    }
+  }, []);
+
+  React.useEffect(() => {
+    load();
+    const interval = setInterval(load, 60000);
+    const onFocus = () => load();
+    window.addEventListener('focus', onFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [load]);
+
+  // Keep structured data in step with what is actually published.
+  React.useEffect(() => {
+    const existing = document.getElementById('testimonial-review-schema');
+    if (existing) existing.remove();
+    if (!testimonials.length) return;
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'testimonial-review-schema';
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ReviewList',
+      name: 'Testimonials for Semmozhiyan N S',
+      itemListElement: testimonials.map((t) => ({
+        '@type': 'Review',
+        reviewBody: t.feedback,
+        datePublished: t.date || undefined,
+        reviewRating: {
+          '@type': 'Rating',
+          ratingValue: String(t.rating || 5),
+          bestRating: '5',
+          worstRating: '1'
+        },
+        author: {
+          '@type': 'Person',
+          name: t.name,
+          jobTitle: t.role || undefined
+        },
+        itemReviewed: { '@id': 'https://portfolio.vendore.tech/#person' }
+      }))
+    });
+    document.head.appendChild(script);
+  }, [testimonials]);
+
+  const ratedTestimonials = testimonials.filter((t) => Number(t.rating) > 0);
+  const averageRating = ratedTestimonials.length
+    ? (ratedTestimonials.reduce((sum, t) => sum + Number(t.rating), 0) / ratedTestimonials.length).toFixed(1)
+    : '—';
+  const isConfigured = testimonialsApiReady();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const name = form.name.trim();
+    const feedback = form.feedback.trim();
+
+    if (!name) {
+      setFormState({ status: 'error', message: 'Please enter your name.' });
+      return;
+    }
+    if (feedback.length < 15) {
+      setFormState({ status: 'error', message: 'Please write at least a sentence or two.' });
+      return;
+    }
+
+    setFormState({ status: 'submitting', message: '' });
+
+    try {
+      const result = await submitTestimonial({
+        name,
+        role: form.role.trim(),
+        company: form.company.trim(),
+        rating: form.rating,
+        feedback,
+        website: form.website,
+        elapsed: Date.now() - openedAt.current
+      });
+
+      setFormState({ status: 'success', message: result.message || 'Your feedback was received.' });
+      setForm({ name: '', role: '', company: '', rating: 5, feedback: '', website: '' });
+    } catch (error) {
+      setFormState({ status: 'error', message: error.message || 'Your feedback could not be sent.' });
+    }
+  };
+
+  const stars = (count, size = 13) =>
+    Array.from({ length: 5 }).map((_, i) => (
+      <Star
+        key={i}
+        size={size}
+        className={
+          i < count
+            ? 'fill-[var(--accent-ruby)] text-[var(--accent-ruby)]'
+            : 'text-[var(--text-muted)]'
+        }
+      />
+    ));
+
+  return (
+    <section id="testimonials" className="py-28 border-b border-[var(--border-subtle)] relative">
+      <div className="max-w-6xl mx-auto px-6">
+        <SectionHeader
+          number="05"
+          subtitle="Feedback From Clients & Colleagues"
+          title="Testimonials & Trusted Endorsements"
+        />
+
+        {/* Lead Narrative Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mb-14"
+        >
+          <TiltCard3D className="p-8 sm:p-12 border border-[var(--border-wine)] shadow-wine-md">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="lg:col-span-8 space-y-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color-mix(in_srgb,var(--accent-wine)_25%,transparent)] border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-[10px] uppercase tracking-wider">
+                  <MessageSquareQuote size={11} className="text-[var(--accent-ruby)]" />
+                  <span>RECOMMENDATIONS · VERBATIM FEEDBACK</span>
+                </div>
+
+                <h3 className="font-serif text-2xl sm:text-4xl font-bold text-[var(--text-primary)] leading-snug">
+                  The work speaks. <span className="gradient-text italic font-normal">So do the people</span> who were there for it.
+                </h3>
+
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light max-w-2xl">
+                  Testimonials are the closest thing to an honest report card. Below are the words clients and colleagues left after working with me — on releases that landed, on incidents that were handled, and on the way the work was carried.
+                </p>
+
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#050406]/70 border border-[var(--border-subtle)]">
+                    <div className="flex items-center gap-1">
+                      {stars(ratedTestimonials.length ? Math.round(Number(averageRating)) : 0)}
+                    </div>
+                    <span className="font-mono text-xs text-[var(--text-secondary)]">
+                      {averageRating} average
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#050406]/70 border border-[var(--border-subtle)] font-mono text-xs text-[var(--text-secondary)]">
+                    <BadgeCheck size={13} className="text-[var(--accent-ruby)]" />
+                    <span>{ratedTestimonials.length} published testimonial{ratedTestimonials.length === 1 ? '' : 's'}</span>
+                  </div>
+
+                  <a
+                    href="#leave-feedback"
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] text-white font-mono text-xs font-bold tracking-widest uppercase shadow-wine-md hover:shadow-wine-lg transition-all"
+                  >
+                    <span>Worked With Me? Leave Feedback</span>
+                    <ArrowRight size={14} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4 p-6 rounded-2xl bg-[#050406]/70 border border-white/5 space-y-4">
+                <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold block">
+                  What Feedback Covers
+                </span>
+                <ul className="space-y-2.5 font-mono text-xs text-[var(--text-secondary)]">
+                  {[
+                    'Ownership & Accountability',
+                    'Deployment & Release Discipline',
+                    'Incident Response Under Pressure',
+                    'Clear Technical Communication'
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </TiltCard3D>
+        </motion.div>
+
+        {/* Published Testimonials */}
+        <div>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-ruby)]" />
+              <h3 className="font-serif text-xl font-bold text-[var(--text-primary)]">
+                In Their Words
+              </h3>
+            </div>
+            <button
+              onClick={load}
+              className="font-mono text-xs text-[var(--accent-vibrant)] hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>Refresh</span>
+              <Activity size={13} />
+            </button>
+          </div>
+
+          {status === 'loading' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="p-8 rounded-3xl glass-card-3d space-y-4 animate-pulse">
+                  <div className="flex gap-1">
+                    {stars(0)}
+                  </div>
+                  <div className="h-3 w-full rounded bg-white/5" />
+                  <div className="h-3 w-4/5 rounded bg-white/5" />
+                  <div className="h-3 w-2/3 rounded bg-white/5" />
+                  <div className="pt-4 border-t border-[var(--border-subtle)] h-8 w-40 rounded bg-white/5" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {status === 'unconfigured' && (
+            <div className="p-10 rounded-3xl glass-card-3d border border-[var(--border-wine)] text-center space-y-3">
+              <MessageSquareQuote size={22} className="text-[color-mix(in_srgb,var(--accent-ruby)_60%,transparent)] mx-auto" />
+              <h4 className="font-serif text-lg font-bold text-[var(--text-primary)]">
+                Testimonials Are Not Connected Yet
+              </h4>
+              <p className="text-xs text-[var(--text-secondary)] font-light max-w-lg mx-auto leading-relaxed">
+                Deploy the Apps Script backend in <span className="font-mono text-[var(--text-primary)]">apps-script/Code.gs</span> and paste the Web App URL into <span className="font-mono text-[var(--text-primary)]">TESTIMONIALS_API</span>. After that, every submission appears here automatically.
+              </p>
+            </div>
+          )}
+
+          {status === 'error' && (
+            <div className="p-8 rounded-3xl glass-card-3d border border-[var(--border-wine)] text-center space-y-3">
+              <Shield size={22} className="text-[var(--accent-ruby)] mx-auto" />
+              <h4 className="font-serif text-lg font-bold text-[var(--text-primary)]">
+                Feedback Temporarily Unavailable
+              </h4>
+              <p className="text-xs text-[var(--text-secondary)] font-light max-w-lg mx-auto leading-relaxed">
+                {statusMessage}
+              </p>
+              <button
+                onClick={load}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0E0B11] border border-[var(--border-subtle)] hover:border-[var(--border-wine)] text-[var(--text-primary)] font-mono text-xs font-semibold transition-all"
+              >
+                <span>Try Again</span>
+              </button>
+            </div>
+          )}
+
+          {status === 'ready' && testimonials.length === 0 && (
+            <div className="p-10 rounded-3xl glass-card-3d border border-[var(--border-wine)] text-center space-y-3">
+              <MessageSquareQuote size={22} className="text-[color-mix(in_srgb,var(--accent-ruby)_60%,transparent)] mx-auto" />
+              <h4 className="font-serif text-lg font-bold text-[var(--text-primary)]">
+                No Testimonials Published Yet
+              </h4>
+              <p className="text-xs text-[var(--text-secondary)] font-light max-w-lg mx-auto leading-relaxed">
+                Every entry is reviewed before it goes live, so this space stays genuine. If you have worked with me, be the first to leave a note below.
+              </p>
+              <a
+                href="#leave-feedback"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0E0B11] border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-xs font-semibold transition-all"
+              >
+                <span>Leave the First Testimonial</span>
+                <ArrowUpRight size={13} />
+              </a>
+            </div>
+          )}
+
+          {status === 'ready' && testimonials.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.map((t, i) => (
+                <motion.div
+                  key={t.id || `${t.name}-${i}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08, duration: 0.6 }}
+                >
+                  <TiltCard3D className="p-8 h-full flex flex-col justify-between group shadow-sm">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-1">
+                          {stars(Number(t.rating) || 5)}
+                        </div>
+                        <Quote size={16} className="text-[color-mix(in_srgb,var(--accent-ruby)_40%,transparent)]" />
+                      </div>
+
+                      <blockquote className="font-serif text-base text-[var(--text-primary)] leading-relaxed italic group-hover:gradient-text transition-all">
+                        “{t.feedback}”
+                      </blockquote>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-[var(--border-subtle)]">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--accent-wine)] to-[var(--accent-ruby)] border border-white/10 flex items-center justify-center font-serif font-bold text-sm text-white shrink-0">
+                          {(t.name || '?').charAt(0)}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-[var(--text-primary)] truncate">
+                            {t.name}
+                          </div>
+                          <div className="font-mono text-[10px] text-[var(--text-muted)] truncate">
+                            {[t.role, t.company].filter(Boolean).join(' · ') || 'Verified Reviewer'}
+                          </div>
+                        </div>
+                        {formatTestimonialDate(t.date) && (
+                          <span className="ml-auto font-mono text-[9px] text-[var(--text-muted)] uppercase tracking-widest shrink-0">
+                            {formatTestimonialDate(t.date)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </TiltCard3D>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Submission Form */}
+        <div id="leave-feedback" className="mt-16 scroll-mt-28">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-7">
+              <div className="glass-card-3d rounded-3xl p-8 border border-[var(--border-wine)] shadow-wine-md">
+                <div className="border-b border-[var(--border-subtle)] pb-4 mb-6">
+                  <h4 className="font-serif text-lg font-bold text-[var(--text-primary)]">
+                    Leave Your Feedback
+                  </h4>
+                  <p className="text-xs text-[var(--text-secondary)] font-light">
+                    Name and feedback are required. Everything else is optional.
+                  </p>
+                </div>
+
+                {formState.status === 'success' ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="py-14 text-center space-y-4"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-[color-mix(in_srgb,var(--accent-wine)_30%,transparent)] border border-[var(--border-wine)] text-[var(--accent-vibrant)] flex items-center justify-center mx-auto">
+                      <CheckCircle2 size={28} />
+                    </div>
+                    <h5 className="font-serif text-xl font-bold text-[var(--text-primary)]">
+                      Feedback Received
+                    </h5>
+                    <p className="text-xs text-[var(--text-secondary)] max-w-sm mx-auto font-light leading-relaxed">
+                      {formState.message}
+                    </p>
+                    <button
+                      onClick={() => setFormState({ status: 'idle', message: '' })}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0E0B11] border border-[var(--border-subtle)] hover:border-[var(--border-wine)] text-[var(--text-primary)] font-mono text-xs font-semibold transition-all"
+                    >
+                      <span>Write Another</span>
+                    </button>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="testimonial-name"
+                          className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider"
+                        >
+                          Your Name *
+                        </label>
+                        <input
+                          id="testimonial-name"
+                          name="name"
+                          type="text"
+                          required
+                          maxLength={80}
+                          value={form.name}
+                          onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                          className="w-full bg-[#050406] border border-[var(--border-subtle)] focus:border-[var(--accent-ruby)] p-4 text-xs rounded-2xl outline-none text-[var(--text-primary)] font-mono transition-colors placeholder-[var(--text-muted)]"
+                          placeholder="First and last name"
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="testimonial-role"
+                          className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider"
+                        >
+                          Role
+                        </label>
+                        <input
+                          id="testimonial-role"
+                          name="role"
+                          type="text"
+                          maxLength={80}
+                          value={form.role}
+                          onChange={(e) => setForm((prev) => ({ ...prev, role: e.target.value }))}
+                          className="w-full bg-[#050406] border border-[var(--border-subtle)] focus:border-[var(--accent-ruby)] p-4 text-xs rounded-2xl outline-none text-[var(--text-primary)] font-mono transition-colors placeholder-[var(--text-muted)]"
+                          placeholder="e.g. Engineering Manager"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="testimonial-company"
+                          className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider"
+                        >
+                          Company
+                        </label>
+                        <input
+                          id="testimonial-company"
+                          name="company"
+                          type="text"
+                          maxLength={80}
+                          value={form.company}
+                          onChange={(e) => setForm((prev) => ({ ...prev, company: e.target.value }))}
+                          className="w-full bg-[#050406] border border-[var(--border-subtle)] focus:border-[var(--accent-ruby)] p-4 text-xs rounded-2xl outline-none text-[var(--text-primary)] font-mono transition-colors placeholder-[var(--text-muted)]"
+                          placeholder="e.g. NexGenAds Technologies"
+                        />
+                      </div>
+
+                      <div>
+                        <span className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
+                          Rating
+                        </span>
+                        <div className="flex items-center gap-1.5 h-[50px]">
+                          {[1, 2, 3, 4, 5].map((value) => (
+                            <button
+                              key={value}
+                              type="button"
+                              onClick={() => setForm((prev) => ({ ...prev, rating: value }))}
+                              aria-label={`${value} star${value === 1 ? '' : 's'}`}
+                              className="transition-transform hover:scale-110 focus:outline-none"
+                            >
+                              <Star
+                                size={22}
+                                className={
+                                  value <= form.rating
+                                    ? 'fill-[var(--accent-ruby)] text-[var(--accent-ruby)]'
+                                    : 'text-[var(--text-muted)]'
+                                }
+                              />
+                            </button>
+                          ))}
+                          <span className="font-mono text-[10px] text-[var(--text-muted)] ml-2 uppercase tracking-wider">
+                            {form.rating} / 5
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="testimonial-feedback"
+                        className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider"
+                      >
+                        Your Feedback *
+                      </label>
+                      <textarea
+                        id="testimonial-feedback"
+                        name="feedback"
+                        rows={5}
+                        required
+                        minLength={15}
+                        maxLength={2000}
+                        value={form.feedback}
+                        onChange={(e) => setForm((prev) => ({ ...prev, feedback: e.target.value }))}
+                        className="w-full bg-[#050406] border border-[var(--border-subtle)] focus:border-[var(--accent-ruby)] p-4 text-xs rounded-2xl outline-none text-[var(--text-primary)] font-mono transition-colors resize-none placeholder-[var(--text-muted)]"
+                        placeholder="What was it like working with me? What changed because of the work?"
+                      />
+                    </div>
+
+                    {/* Honeypot — hidden from people, tempting to bots */}
+                    <div className="hidden" aria-hidden="true">
+                      <label htmlFor="testimonial-website">Website</label>
+                      <input
+                        id="testimonial-website"
+                        name="website"
+                        type="text"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={form.website}
+                        onChange={(e) => setForm((prev) => ({ ...prev, website: e.target.value }))}
+                      />
+                    </div>
+
+                    {formState.status === 'error' && (
+                      <p className="font-mono text-[11px] text-[var(--accent-vibrant)]">{formState.message}</p>
+                    )}
+
+                    <motion.button
+                      whileHover={{ y: -2, scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="submit"
+                      disabled={formState.status === 'submitting' || !isConfigured}
+                      className="w-full py-4 rounded-2xl bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] text-white font-mono text-xs font-bold tracking-widest uppercase hover:shadow-wine-md transition-all duration-300 border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {formState.status === 'submitting' ? 'Transmitting...' : 'Submit Testimonial'}
+                    </motion.button>
+                  </form>
+                )}
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 space-y-6">
+              <div className="p-6 rounded-2xl bg-[#050406]/70 border border-white/5 space-y-4">
+                <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold block">
+                  How Publishing Works
+                </span>
+                <ul className="space-y-2.5 font-mono text-xs text-[var(--text-secondary)]">
+                  {[
+                    'Submit your name, role and feedback',
+                    'Every entry is reviewed for authenticity',
+                    'Approved entries appear here automatically',
+                    'Star ratings reflect real working experience'
+                  ].map((item, index) => (
+                    <li key={item} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                      <span>
+                        <span className="text-[var(--text-muted)] mr-1">0{index + 1}.</span>
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#050406]/70 border border-white/5 space-y-4">
+                <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold block">
+                  Prefer Email?
+                </span>
+                <p className="text-xs text-[var(--text-secondary)] font-light leading-relaxed">
+                  Send your testimonial directly and I will publish it with your permission.
+                </p>
+                <a
+                  href="mailto:semmozhiyan40@gmail.com?subject=Testimonial%20for%20Semmozhiyan"
+                  className="inline-flex items-center gap-2 font-mono text-xs text-[var(--accent-vibrant)] hover:text-white transition-colors font-semibold"
+                >
+                  <Mail size={13} />
+                  <span>semmozhiyan40@gmail.com</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
 // --- Contact ("Direct Transmission") ---
 
 const Contact = () => {
@@ -1222,7 +1888,7 @@ const Contact = () => {
     <section id="contact" className="py-28 relative">
       <div className="max-w-6xl mx-auto px-6">
         <SectionHeader
-          number="05"
+          number="06"
           subtitle="Direct Communication"
           title="Initiate Transmission & Collaboration"
         />
@@ -1423,6 +2089,7 @@ const CommandPalette = ({ isOpen, onClose }) => {
     { id: 'projects', label: 'Personal Projects', href: '/#projects', desc: 'Foodela, Vendora & Orivex product suite' },
     { id: 'journey', label: 'The Journey & Ambition', href: '/journey', desc: 'The road to building something of my own' },
     { id: 'lessons', label: 'Lessons Life Taught Me', href: '/lessons', desc: 'Patience, failure, consistency, and 8 life lessons' },
+    { id: 'testimonials', label: 'Testimonials & Endorsements', href: '/#testimonials', desc: 'What clients and colleagues say about the work' },
     { id: 'contact', label: 'Direct Transmission', href: '/#contact', desc: 'Connect with Semmozhiyan' },
   ];
 
@@ -1621,7 +2288,7 @@ const HomePage = ({ onOpenResume }) => {
     document.title = "The Tale Of Semmozhiyan | Site Reliability Engineer & Software Developer";
   }, []);
 
-  const activeSection = useActiveSection(['about', 'experience', 'projects', 'journey', 'lessons', 'contact']);
+  const activeSection = useActiveSection(['about', 'experience', 'projects', 'journey', 'lessons', 'testimonials', 'contact']);
 
   return (
     <>
@@ -1636,6 +2303,7 @@ const HomePage = ({ onOpenResume }) => {
         <PersonalProjects />
         <JourneyPreview />
         <LessonsPreview />
+        <Testimonials />
         <Contact />
       </main>
 

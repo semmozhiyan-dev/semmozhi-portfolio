@@ -34,6 +34,12 @@ Key responsibilities include:
 2. **Vendora**: E-commerce platform engineered with React, Node.js, Express, and PostgreSQL.
 3. **Orivex**: Digital asset distribution engine built with Next.js, TypeScript, and Go microservices.
 
+## Client & Colleague Testimonials
+- **Location**: https://portfolio.vendore.tech/#testimonials
+- **How it works**: Visitors submit their own name, role, company, star rating and written feedback through the "Leave Your Feedback" form on the homepage. Each submission is reviewed for authenticity before it is published, so every visible entry is attributable to a real person rather than being authored marketing copy.
+- **What the feedback covers**: Ownership and accountability, deployment and release discipline, incident response under pressure, and technical communication.
+- **Machine-readable form**: The published entries are also exposed as schema.org `ReviewList` / `Review` structured data, including `reviewRating`, `author` and `datePublished` for each entry.
+
 ## The 8 Life Lessons (From "Lessons Life Taught Me")
 1. **Patience (Not Everything Happens on My Timeline)**: Focus on consistent quality effort today rather than measuring against artificial deadlines.
    - *Quote*: "I cannot control how quickly every result arrives, but I can control the quality of the effort I bring today."

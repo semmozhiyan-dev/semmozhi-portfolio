@@ -6,6 +6,7 @@
 - [Portfolio Homepage](https://portfolio.vendore.tech/): Official engineering portfolio, professional background, NexGenAds SRE roles, personal software products, and direct contact form.
 - [The Journey](https://portfolio.vendore.tech/journey): Personal narrative, founder ambition, the road to building an independent startup, relationship with capital, and long-term milestones.
 - [Lessons Life Taught Me](https://portfolio.vendore.tech/lessons): Experiential wisdom across 8 life lessons covering patience, failure, trust, consistency, choosing your circle, uncertainty, money, and self-respect.
+- [Testimonials](https://portfolio.vendore.tech/#testimonials): Client and colleague feedback published with the reviewer's own name, role, company and star rating; every entry is reviewed before it goes live.
 - [Resume PDF](https://portfolio.vendore.tech/SEMMOZHIYAN_RESUME%20(4).pdf): Direct download of verified Site Reliability Engineer resume.
 - [GitHub Profile](https://github.com/semmozhiyan-dev): Open-source repositories, full-stack architectures, and codebase repositories.
 - [LinkedIn Profile](https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/): Professional engineering background and verified network.
