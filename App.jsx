@@ -1,28 +1,125 @@
 import React from 'react';
-import { motion, AnimatePresence, useScroll, useMotionValueEvent, useSpring, useTransform, useMotionValue, useMotionTemplate } from 'framer-motion';
-import { Github, Linkedin, Mail, ArrowUpRight, Terminal, Server, Database, Layout, GitCommit, Activity, Box, Code2, Cpu, Layers, Command, Search, X, FileText, Download, Copy, Check, Sun, Moon, Sparkles, Zap, Globe, Shield, Clock, MapPin, ExternalLink, Star } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent, useSpring, useMotionValue, useTransform } from 'framer-motion';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import {
+  Github,
+  Linkedin,
+  Mail,
+  ArrowUpRight,
+  Server,
+  Layers,
+  Command,
+  Search,
+  X,
+  FileText,
+  Download,
+  Check,
+  Sparkles,
+  Zap,
+  Globe,
+  Shield,
+  MapPin,
+  ExternalLink,
+  Code2,
+  Box,
+  Compass,
+  CheckCircle2,
+  Cpu,
+  Database,
+  Briefcase,
+  Terminal,
+  Activity,
+  ShoppingCart,
+  Utensils,
+  CreditCard,
+  Quote,
+  TrendingUp,
+  ArrowRight
+} from 'lucide-react';
 import profileImg from './semmozhi.jpeg';
+import JourneyPage from './JourneyPage.jsx';
+import LessonsPage from './LessonsPage.jsx';
 
-// --- Hooks ---
+// --- Interactive 3D Tilt Component ---
 
-const useTheme = () => {
-  const [theme, setTheme] = React.useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme');
-      if (saved) return saved;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'light';
-  });
+const TiltCard3D = ({ children, className = "", onClick, ...props }) => {
+  const cardRef = React.useRef(null);
+  
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
-  React.useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  const mouseXSpring = useSpring(x, { stiffness: 260, damping: 25 });
+  const mouseYSpring = useSpring(y, { stiffness: 260, damping: 25 });
 
-  const toggle = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
-  return { theme, toggle };
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["9deg", "-9deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-9deg", "9deg"]);
+
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [glarePos, setGlarePos] = React.useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+
+    x.set(xPct);
+    y.set(yPct);
+
+    setGlarePos({
+      x: (mouseX / width) * 100,
+      y: (mouseY / height) * 100,
+    });
+  };
+
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <div className="perspective-1000 w-full h-full">
+      <motion.div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={onClick}
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: "preserve-3d",
+        }}
+        className={`relative rounded-3xl glass-card-3d overflow-hidden ${className}`}
+        {...props}
+      >
+        {/* Dynamic Specular Light Sweep */}
+        <div
+          className="absolute inset-0 pointer-events-none transition-opacity duration-500 z-10"
+          style={{
+            opacity: isHovered ? 0.35 : 0,
+            background: `radial-gradient(circle 340px at ${glarePos.x}% ${glarePos.y}%, rgba(222, 47, 82, 0.35), transparent 70%)`,
+          }}
+        />
+
+        {/* Inner Content with 3D Pop */}
+        <div style={{ transform: "translateZ(25px)", transformStyle: "preserve-3d" }}>
+          {children}
+        </div>
+      </motion.div>
+    </div>
+  );
 };
+
+// --- Custom Hooks ---
 
 const useActiveSection = (sectionIds) => {
   const [active, setActive] = React.useState(sectionIds[0]);
@@ -34,7 +131,7 @@ const useActiveSection = (sectionIds) => {
           setActive(entry.target.id);
         }
       });
-    }, { rootMargin: '-40% 0px -55% 0px' });
+    }, { rootMargin: '-25% 0px -55% 0px' });
 
     sectionIds.forEach(id => {
       const el = document.getElementById(id);
@@ -47,319 +144,98 @@ const useActiveSection = (sectionIds) => {
   return active;
 };
 
-const useMousePosition = () => {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+// --- Atmospheric 3D Lighting ---
+
+const AtmosphericBackground = () => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 45, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 45, damping: 20 });
 
   React.useEffect(() => {
-    const handleMouse = ({ clientX, clientY }) => {
-      x.set(clientX);
-      y.set(clientY);
+    const handleMove = (e) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
-    window.addEventListener('mousemove', handleMouse);
-    return () => window.removeEventListener('mousemove', handleMouse);
-  }, []);
-
-  return { x, y };
-};
-
-// --- Design System Components ---
-
-const SectionHeader = ({ number, title, gradient = false }) => (
-  <div className="flex items-center gap-3 mb-10 border-b border-[var(--border-subtle)] pb-4 group">
-    <span className="font-mono text-xs text-[var(--accent-action)] font-bold tracking-wider">0{number}.</span>
-    <h2 className={`text-sm font-bold tracking-wide uppercase ${gradient ? 'gradient-text' : 'text-[var(--text-primary)]'}`}>
-      {title}
-    </h2>
-    <div className="flex-1 h-px bg-gradient-to-r from-[var(--border-subtle)] to-transparent ml-4" />
-  </div>
-);
-
-const StatusBadge = ({ status }) => {
-  const colors = {
-    active: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
-    building: 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]',
-    offline: 'bg-gray-500'
-  };
+    window.addEventListener('mousemove', handleMove);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, [mouseX, mouseY]);
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-primary)]/80 border border-[var(--border-subtle)] backdrop-blur-sm">
-      <span className={`w-2 h-2 rounded-full ${colors[status] || colors.offline}`} />
-      <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--text-secondary)]">{status}</span>
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      {/* Deep Velvet Wine Core Nebula */}
+      <div className="absolute -top-[20%] left-[10%] w-[55vw] h-[55vw] rounded-full bg-[#3D0A13]/25 blur-[160px]" />
+      
+      {/* Rich Ruby Lateral Accent */}
+      <div className="absolute top-[35%] -right-[15%] w-[50vw] h-[50vw] rounded-full bg-[#781223]/20 blur-[170px]" />
+      
+      {/* Deep Obsidian Noir Floor */}
+      <div className="absolute -bottom-[20%] left-[25%] w-[45vw] h-[45vw] rounded-full bg-[#26050C]/25 blur-[160px]" />
+
+      {/* Cursor-Interactive Fluid Light Orb */}
+      <motion.div
+        className="absolute w-[35vw] h-[35vw] rounded-full bg-[#A51D35]/12 blur-[140px] -translate-x-1/2 -translate-y-1/2"
+        style={{ left: springX, top: springY }}
+      />
     </div>
   );
 };
 
-const ScrollProgress = () => {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+// --- Typography & Subcomponents ---
 
-  return (
-    <motion.div
-      className="fixed top-0 left-0 right-0 h-[3px] origin-left z-[100]"
-      style={{ scaleX, background: 'var(--gradient-1)' }}
-    />
-  );
-};
-
-const FloatingOrb = ({ className, size = 'w-64 h-64', color = 'var(--accent-action)', delay = 0, duration = 15 }) => (
-  <motion.div
-    className={`absolute rounded-full pointer-events-none ${size} ${className}`}
-    style={{ background: color, filter: `blur(100px)` }}
-    animate={{
-      scale: [1, 1.15, 0.95, 1],
-      opacity: [0.15, 0.25, 0.1, 0.15],
-      x: [0, 60, -30, 0],
-      y: [0, -40, 50, 0],
-    }}
-    transition={{ duration, repeat: Infinity, ease: "easeInOut", delay }}
-  />
-);
-
-const AnimatedGradientBorder = ({ children, className = '' }) => (
-  <div className={`gradient-border-card ${className}`}>
-    {children}
+const SectionHeader = ({ number, title, subtitle }) => (
+  <div className="mb-14 border-b border-[var(--border-subtle)] pb-6">
+    <div className="flex items-center gap-3 mb-2">
+      <span className="font-mono text-xs font-bold text-[var(--accent-ruby)] tracking-widest uppercase">
+        {number}
+      </span>
+      <div className="w-6 h-px bg-[var(--accent-ruby)]" />
+      <span className="font-mono text-[11px] tracking-widest text-[var(--text-muted)] uppercase">
+        {subtitle}
+      </span>
+    </div>
+    <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
+      {title}
+    </h2>
   </div>
 );
 
-const GlowButton = ({ children, href, icon: Icon, ...props }) => {
-  const btn = (
+const LuxuryButton = ({ children, href, to, onClick, icon: Icon, primary = false, className = "" }) => {
+  const content = (
     <motion.div
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      className="relative group cursor-pointer"
+      whileHover={{ y: -2, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={`relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl font-mono text-xs font-semibold tracking-wider transition-all duration-300 cursor-pointer ${
+        primary
+          ? 'bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] text-white shadow-wine-md hover:shadow-wine-lg border border-white/10'
+          : 'bg-[#0E0B11]/80 border border-[var(--border-subtle)] hover:border-[var(--border-wine)] text-[var(--text-primary)] hover:bg-[#15101A] shadow-sm'
+      } ${className}`}
     >
-      <div className="absolute -inset-1 bg-gradient-to-r from-[var(--accent-action)] via-purple-500 to-pink-500 rounded-lg opacity-0 group-hover:opacity-75 blur transition-all duration-300" />
-      <div className="relative flex items-center gap-2 px-5 py-2.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-primary)] transition-all duration-300">
-        {Icon && <Icon size={16} className="group-hover:scale-110 transition-transform" />}
-        {children}
-      </div>
+      {Icon && <Icon size={14} className={primary ? "text-white" : "text-[var(--accent-ruby)]"} />}
+      <span>{children}</span>
     </motion.div>
   );
 
-  if (href) return <a href={href} target="_blank" rel="noopener noreferrer">{btn}</a>;
-  return btn;
+  if (to) {
+    return <Link to={to}>{content}</Link>;
+  }
+
+  if (href) {
+    const isExt = href.startsWith('http') || href.startsWith('mailto');
+    return (
+      <a href={href} target={isExt ? "_blank" : undefined} rel={isExt ? "noopener noreferrer" : undefined}>
+        {content}
+      </a>
+    );
+  }
+
+  return <button onClick={onClick} type="button">{content}</button>;
 };
 
-// --- Network Topology Background ---
+// --- Navigation ---
 
-const NetworkBackground = () => {
-  const canvasRef = React.useRef(null);
-
-  React.useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let animId;
-    let particles = [];
-    let dataPackets = [];
-    const MAX_PARTICLES = 60;
-    const CONNECTION_DIST = 150;
-    const MOUSE_INFLUENCE = 100;
-
-    let mouse = { x: -1000, y: -1000 };
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    const createParticle = (isServer = false) => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      radius: isServer ? 4 + Math.random() * 3 : 1.5 + Math.random() * 2,
-      isServer,
-      pulse: Math.random() * Math.PI * 2,
-      pulseSpeed: 0.02 + Math.random() * 0.02,
-      connections: [],
-    });
-
-    const init = () => {
-      particles = [];
-      dataPackets = [];
-      for (let i = 0; i < MAX_PARTICLES; i++) {
-        particles.push(createParticle(i < 10));
-      }
-    };
-
-    const spawnDataPacket = () => {
-      const start = particles[Math.floor(Math.random() * particles.length)];
-      let end;
-      do {
-        end = particles[Math.floor(Math.random() * particles.length)];
-      } while (end === start);
-
-      const dist = Math.hypot(end.x - start.x, end.y - start.y);
-      if (dist > CONNECTION_DIST * 1.5) return;
-
-      dataPackets.push({
-        startX: start.x, startY: start.y,
-        endX: end.x, endY: end.y,
-        progress: 0,
-        speed: 0.008 + Math.random() * 0.012,
-        size: 1.5 + Math.random() * 1.5,
-      });
-    };
-
-    const getThemeColors = () => {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      return {
-        node: isDark ? '#60A5FA' : '#3B82F6',
-        serverNode: isDark ? '#34D399' : '#10B981',
-        connection: isDark ? 'rgba(96,165,250,0.15)' : 'rgba(59,130,246,0.12)',
-        packet: isDark ? '#A78BFA' : '#7C3AED',
-        glow: isDark ? 'rgba(96,165,250,0.06)' : 'rgba(59,130,246,0.04)',
-      };
-    };
-
-    const draw = () => {
-      const colors = getThemeColors();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw connections
-      particles.forEach((p, i) => {
-        for (let j = i + 1; j < particles.length; j++) {
-          const other = particles[j];
-          const dx = p.x - other.x;
-          const dy = p.y - other.y;
-          const dist = Math.hypot(dx, dy);
-
-          if (dist < CONNECTION_DIST) {
-            const alpha = (1 - dist / CONNECTION_DIST) * 0.5;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(other.x, other.y);
-            ctx.strokeStyle = p.isServer || other.isServer
-              ? `rgba(52, 211, 153, ${alpha * 0.4})`
-              : `rgba(96, 165, 250, ${alpha * 0.3})`;
-            ctx.lineWidth = 0.5 + (1 - dist / CONNECTION_DIST) * 1;
-            ctx.stroke();
-          }
-        }
-      });
-
-      // Draw data packets
-      dataPackets = dataPackets.filter(p => p.progress < 1);
-      dataPackets.forEach(pkt => {
-        pkt.progress += pkt.speed;
-        const x = pkt.startX + (pkt.endX - pkt.startX) * pkt.progress;
-        const y = pkt.startY + (pkt.endY - pkt.startY) * pkt.progress;
-
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, pkt.size * 3);
-        gradient.addColorStop(0, 'rgba(167, 139, 250, 0.8)');
-        gradient.addColorStop(0.5, 'rgba(167, 139, 250, 0.3)');
-        gradient.addColorStop(1, 'rgba(167, 139, 250, 0)');
-        ctx.beginPath();
-        ctx.arc(x, y, pkt.size * 3, 0, Math.PI * 2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(x, y, pkt.size, 0, Math.PI * 2);
-        ctx.fillStyle = '#A78BFA';
-        ctx.fill();
-      });
-
-      // Draw nodes
-      particles.forEach(p => {
-        p.pulse += p.pulseSpeed;
-        const pulseRadius = p.isServer
-          ? 2 + Math.sin(p.pulse) * 1.5
-          : 1 + Math.sin(p.pulse) * 0.8;
-
-        const nodeColor = p.isServer ? colors.serverNode : colors.node;
-        const glowColor = p.isServer ? colors.glow : 'rgba(96,165,250,0.04)';
-
-        // Glow
-        const glowGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 6);
-        glowGrad.addColorStop(0, glowColor);
-        glowGrad.addColorStop(1, 'transparent');
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius * 6, 0, Math.PI * 2);
-        ctx.fillStyle = glowGrad;
-        ctx.fill();
-
-        // Node
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius + pulseRadius, 0, Math.PI * 2);
-        ctx.fillStyle = nodeColor;
-        ctx.fill();
-
-        if (p.isServer) {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius + pulseRadius + 2, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(52, 211, 153, ${0.2 + Math.sin(p.pulse) * 0.1})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      });
-
-      // Update positions
-      particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        const dx = mouse.x - p.x;
-        const dy = mouse.y - p.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < MOUSE_INFLUENCE && dist > 0) {
-          const force = (1 - dist / MOUSE_INFLUENCE) * 0.5;
-          p.x -= (dx / dist) * force;
-          p.y -= (dy / dist) * force;
-        }
-
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        p.x = Math.max(0, Math.min(canvas.width, p.x));
-        p.y = Math.max(0, Math.min(canvas.height, p.y));
-      });
-
-      // Randomly spawn data packets
-      if (Math.random() < 0.03) spawnDataPacket();
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    const handleMouse = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
-    const handleLeave = () => { mouse.x = -1000; mouse.y = -1000; };
-
-    resize();
-    init();
-    draw();
-
-    window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', handleMouse);
-    window.addEventListener('mouseleave', handleLeave);
-
-    const themeObserver = new MutationObserver(() => {});
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', handleMouse);
-      window.removeEventListener('mouseleave', handleLeave);
-      themeObserver.disconnect();
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 z-0 pointer-events-none"
-      style={{ opacity: 0.9 }}
-    />
-  );
-};
-
-// --- Sections ---
-
-const Navigation = ({ theme, toggleTheme, activeSection }) => {
+const Navigation = ({ activeSection, onOpenResume }) => {
   const [scrolled, setScrolled] = React.useState(false);
   const { scrollY } = useScroll();
 
@@ -368,796 +244,952 @@ const Navigation = ({ theme, toggleTheme, activeSection }) => {
   });
 
   const navItems = [
-    { id: 'system', label: 'system' },
-    { id: 'logs', label: 'logs' },
-    { id: 'metrics', label: 'metrics' },
-    { id: 'rfc', label: 'rfc' },
-
-    { id: 'connect', label: 'connect' },
+    { id: 'about', label: 'About', href: '#about' },
+    { id: 'experience', label: 'Experience', href: '#experience' },
+    { id: 'projects', label: 'Projects', href: '#projects' },
+    { id: 'journey', label: 'Journey', href: '#journey' },
+    { id: 'lessons', label: 'Lessons', href: '#lessons' },
+    { id: 'contact', label: 'Contact', href: '#contact' },
   ];
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-[var(--border-subtle)] shadow-lg shadow-black/5'
-          : 'bg-transparent'
+    <motion.header
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled ? 'glass-nav py-4 shadow-[0_15px_40px_rgba(0,0,0,0.85)]' : 'bg-transparent py-6'
       }`}
     >
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <motion.a
-          href="#system"
-          whileHover={{ scale: 1.02 }}
-          className="flex items-center gap-3 group"
-        >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-action)] to-purple-500 flex items-center justify-center shadow-lg shadow-[var(--accent-action)]/20">
-            <Terminal size={14} className="text-white" />
+      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+        
+        {/* Brand: The Tale Of Semmozhiyan */}
+        <a href="#about" className="flex items-center gap-3.5 group">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--accent-wine)] to-[var(--accent-ruby)] flex items-center justify-center text-white shadow-wine-sm border border-white/10 group-hover:scale-105 transition-transform duration-300">
+            <span className="font-serif font-black text-sm tracking-wider">S</span>
           </div>
-          <div className="flex items-center gap-1.5 font-mono text-sm">
-            <span className="text-[var(--accent-action)] font-medium">~/</span>
-            <span className="text-[var(--text-primary)] font-semibold group-hover:gradient-text transition-all duration-300">portfolio</span>
+          <div className="flex flex-col">
+            <span className="font-serif font-bold text-base sm:text-lg tracking-wide text-[var(--text-primary)] group-hover:gradient-text transition-all">
+              The Tale Of Semmozhiyan
+            </span>
+            <span className="font-mono text-[9px] tracking-widest text-[var(--text-secondary)] uppercase">
+              Site Reliability Engineer
+            </span>
           </div>
-        </motion.a>
+        </a>
 
-        <div className="hidden md:flex items-center gap-1">
+        {/* Minimalist Nav Links */}
+        <nav className="hidden md:flex items-center gap-1 bg-[#0E0B11]/70 px-4 py-2 rounded-full border border-[var(--border-subtle)] backdrop-blur-xl">
           {navItems.map((item) => {
             const isActive = activeSection === item.id;
             return (
               <a
                 key={item.id}
-                href={`#${item.id}`}
-                className={`relative px-4 py-2 font-mono text-xs tracking-wider uppercase transition-all duration-300 rounded-lg ${
-                  isActive
-                    ? 'text-[var(--accent-action)]'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-subtle)]/50'
+                href={item.href}
+                className={`relative px-4 py-1.5 font-mono text-[11px] tracking-wider uppercase transition-all duration-300 rounded-full ${
+                  isActive ? 'text-white font-semibold' : 'text-[var(--text-secondary)] hover:text-white'
                 }`}
               >
                 {item.label}
                 {isActive && (
                   <motion.div
-                    layoutId="nav-pill"
-                    className="absolute inset-0 bg-[var(--accent-action)]/10 border border-[var(--accent-action)]/20 rounded-lg -z-10"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    layoutId="luxuryNavPill"
+                    className="absolute inset-0 bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] rounded-full -z-10 shadow-wine-sm"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
               </a>
             );
           })}
-          <div className="w-px h-6 bg-[var(--border-subtle)] mx-2" />
+        </nav>
+
+        {/* Action Button */}
+        <div className="flex items-center gap-3">
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleTheme}
-            className="p-2 rounded-lg hover:bg-[var(--border-subtle)]/50 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all duration-300"
-            aria-label="Toggle theme"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onOpenResume}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0E0B11] border border-[var(--border-subtle)] hover:border-[var(--border-wine)] text-[var(--text-primary)] font-mono text-xs font-semibold transition-all duration-300 shadow-sm"
           >
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            <FileText size={13} className="text-[var(--accent-ruby)]" />
+            <span>RESUME</span>
           </motion.button>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={toggleTheme}
-          className="md:hidden p-2 rounded-lg border border-[var(--border-subtle)] text-[var(--text-secondary)]"
-          aria-label="Toggle theme"
-        >
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-        </motion.button>
       </div>
-    </motion.nav>
+    </motion.header>
   );
 };
 
-const Hero = () => {
-  const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
+// --- Hero Section (Haute-Luxury Editorial 3D) ---
 
-  React.useEffect(() => {
-    const handleMouse = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouse);
-    return () => window.removeEventListener('mousemove', handleMouse);
-  }, []);
-
-  const parallaxStyle = (factor = 0.02) => ({
-    transform: `translate(${(mousePosition.x - window.innerWidth / 2) * factor}px, ${(mousePosition.y - window.innerHeight / 2) * factor}px)`,
-    transition: 'transform 0.1s ease-out',
-  });
+const Hero = ({ onOpenResume }) => {
+  const focusAreas = [
+    'Site Reliability Engineering',
+    'DevOps',
+    'Full-Stack Development',
+    'CI/CD Automation',
+    'Observability',
+    'Cloud Infrastructure'
+  ];
 
   return (
-    <section id="system" className="relative min-h-screen flex items-center pt-24 pb-20 overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <FloatingOrb className="top-[-10%] left-[-5%]" size="w-[40vw] h-[40vw]" color="var(--accent-action)" delay={0} duration={20} />
-        <FloatingOrb className="bottom-[-10%] right-[-5%]" size="w-[35vw] h-[35vw]" color="var(--glow-purple)" delay={3} duration={18} />
-        <FloatingOrb className="top-[40%] right-[20%]" size="w-[25vw] h-[25vw]" color="var(--glow-green)" delay={6} duration={22} />
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6 relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          <div className="lg:col-span-7 relative">
+    <section id="about" className="relative pt-36 pb-28 md:pt-48 md:pb-36 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          
+          {/* Narrative Column */}
+          <div className="lg:col-span-7 space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="mb-4"
-              >
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent-action)]/10 border border-[var(--accent-action)]/20 text-xs font-mono text-[var(--accent-action)]">
-                  <Sparkles size={12} />
-                  <span>Available for opportunities</span>
-                </div>
-              </motion.div>
+              {/* Discrete Role Tag */}
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[var(--accent-wine)]/20 border border-[var(--border-wine)] text-xs font-mono text-[var(--accent-vibrant)] mb-8 shadow-wine-sm">
+                <Sparkles size={12} className="text-[var(--accent-ruby)]" />
+                <span>SITE RELIABILITY ENGINEER · SOFTWARE DEVELOPER</span>
+              </div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight mb-2 leading-[1.1]"
-              >
-                <span className="text-[var(--text-primary)]">Hey, I'm </span>
+              {/* Grand Editorial Headline */}
+              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] mb-6">
+                <span>Building </span>
+                <span className="gradient-text italic font-normal">Reliable </span>
+                <span>Software.</span>
                 <br />
-                <span className="gradient-text inline-block">Semmozhiyan</span>
-              </motion.h1>
+                <span>Engineering for Scale.</span>
+              </h1>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-4 mb-8"
-              >
-                <div className="flex flex-wrap items-center gap-3 font-mono">
-                  <span className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-md text-sm text-[var(--text-secondary)] inline-flex items-center gap-2 shadow-sm">
-                    <Cpu size={14} className="text-[var(--accent-action)]" />
-                    Java Developer
-                  </span>
-                  <span className="text-[var(--text-secondary)] text-lg">//</span>
-                  <span className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-md text-sm text-[var(--text-secondary)] inline-flex items-center gap-2 shadow-sm">
-                    <Server size={14} className="text-purple-500" />
-                    DevOps Engineer
-                  </span>
-                  <span className="text-[var(--text-secondary)] text-lg">//</span>
-                  <span className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-md text-sm text-[var(--text-secondary)] inline-flex items-center gap-2 shadow-sm">
-                    <Zap size={14} className="text-amber-500" />
-                    Cloud Architect
-                  </span>
-                </div>
-              </motion.div>
+              {/* Lead Text */}
+              <p className="text-[var(--text-primary)] text-base sm:text-lg leading-relaxed max-w-xl font-medium mb-4">
+                Engineering reliable digital experiences. Building applications, automating deployments, and improving system reliability.
+              </p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="relative"
-              >
-                <div className="p-6 glass-card rounded-2xl mb-8 max-w-2xl">
-                  <div className="flex items-center gap-2 text-[var(--text-secondary)] mb-4 border-b border-[var(--border-subtle)] pb-3">
-                    <Terminal size={14} />
-                    <span className="font-mono text-xs">bio.txt</span>
-                    <span className="ml-auto text-[10px] text-[var(--accent-action)] font-mono">~ README.md</span>
-                  </div>
-                  <div className="space-y-3 font-mono text-sm leading-relaxed">
-                    {[
-                      { delay: 0.3, text: 'Aspiring DevOps Engineer & Java Developer building scalable, resilient infrastructure.' },
-                      { delay: 0.8, text: 'Stack: Java, Python, AWS, Kubernetes, Docker, Jenkins, Terraform.' },
-                      { delay: 1.3, text: 'Focused on automation, CI/CD, and cloud-native architecture.' },
-                    ].map((line, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.5 + (i * 0.5) }}
-                        className="flex gap-2"
-                      >
-                        <span className="text-[var(--accent-action)] shrink-0">$</span>
-                        <span className="text-[var(--text-primary)]">{line.text}</span>
-                      </motion.div>
-                    ))}
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 2 }}
-                      className="flex gap-2"
-                    >
-                      <span className="text-[var(--accent-action)] shrink-0">$</span>
-                      <span className="text-[var(--text-primary)]">Currently: Building next-gen deployment pipelines</span>
-                      <motion.span
-                        animate={{ opacity: [1, 0] }}
-                        transition={{ repeat: Infinity, duration: 0.8 }}
-                        className="inline-block w-2 h-4 bg-[var(--accent-action)] ml-1"
-                      />
-                    </motion.div>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0 }}
-                className="flex flex-wrap gap-3"
-              >
-                <GlowButton href="https://github.com/semmozhiyan-dev" icon={Github}>GitHub</GlowButton>
-                <GlowButton href="https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/" icon={Linkedin}>LinkedIn</GlowButton>
-                <GlowButton href="mailto:semmozhiyan40@gmail.com" icon={Mail}>Email</GlowButton>
-              </motion.div>
+              {/* Narrative Paragraphs */}
+              <div className="space-y-4 text-sm text-[var(--text-secondary)] font-light leading-relaxed max-w-xl">
+                <p>
+                  I'm a software engineer and Site Reliability Engineer focused on building dependable applications, improving deployment workflows, and maintaining reliable digital systems.
+                </p>
+                <p>
+                  My experience spans full-stack development, backend engineering, cloud infrastructure, CI/CD automation, monitoring, and production troubleshooting. I enjoy turning complex technical challenges into practical, scalable solutions.
+                </p>
+                <p>
+                  Currently, I'm working at <strong className="text-[var(--text-primary)] font-semibold">NexGenAds Technologies Pvt. Ltd.</strong>, contributing to projects across digital ordering, CRM, and point-of-sale systems, while continuing to build and refine my own products.
+                </p>
+              </div>
             </motion.div>
-          </div>
 
-          <div className="lg:col-span-5 relative">
+            {/* Focus Areas */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-              className="relative"
-              style={parallaxStyle(0.03)}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="p-7 rounded-3xl glass-card-3d border-l-4 border-l-[var(--accent-ruby)] space-y-3"
             >
-              <div className="relative mx-auto w-64 h-64 sm:w-72 sm:h-72">
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-action)] via-purple-500 to-pink-500 rounded-2xl blur-2xl opacity-30 animate-pulse-glow" />
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-action)] via-purple-500 to-pink-500 rounded-2xl p-[2px]">
-                  <div className="w-full h-full rounded-2xl overflow-hidden bg-[var(--bg-primary)]">
-                    <motion.img
-                      whileHover={{ scale: 1.05 }}
-                      src={profileImg}
-                      onError={(e) => { e.target.onerror = null; e.target.src = "https://github.com/semmozhiyan-dev.png"; }}
-                      alt="Semmozhiyan"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1.5, type: "spring" }}
-                  className="absolute -bottom-4 -right-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl p-4 shadow-xl backdrop-blur-sm"
-                  style={parallaxStyle(0.05)}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-500/50" />
-                    <div>
-                      <div className="text-xs font-bold text-[var(--text-primary)]">Available</div>
-                      <div className="text-[10px] text-[var(--text-secondary)] font-mono">For hire</div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1.8, type: "spring" }}
-                  className="absolute -top-4 -left-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl p-3 shadow-xl backdrop-blur-sm"
-                  style={parallaxStyle(-0.03)}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="flex -space-x-1">
-                      {[Github, Linkedin, Mail].map((Icon, i) => (
-                        <div key={i} className="w-7 h-7 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)] flex items-center justify-center">
-                          <Icon size={10} className="text-[var(--text-secondary)]" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
+              <div className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">
+                Core Focus Areas
               </div>
-
-              <div className="mt-8 space-y-3">
-                <div className="flex items-center justify-center gap-2 text-xs font-mono text-[var(--text-secondary)]">
-                  <MapPin size={12} />
-                  <span>India</span>
-                  <span className="w-1 h-1 rounded-full bg-[var(--text-secondary)]" />
-                  <Clock size={12} />
-                  <span>IST (UTC +5:30)</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const TechMarquee = () => {
-  const stack = [
-    { name: 'React', icon: <Layout size={16} />, color: 'text-sky-400' },
-    { name: 'Node.js', icon: <Server size={16} />, color: 'text-green-500' },
-    { name: 'Python', icon: <Terminal size={16} />, color: 'text-yellow-500' },
-    { name: 'PostgreSQL', icon: <Database size={16} />, color: 'text-blue-400' },
-    { name: 'AWS', icon: <Activity size={16} />, color: 'text-orange-400' },
-    { name: 'Docker', icon: <Box size={16} />, color: 'text-blue-500' },
-    { name: 'TypeScript', icon: <Code2 size={16} />, color: 'text-blue-600' },
-    { name: 'Git', icon: <GitCommit size={16} />, color: 'text-orange-600' },
-    { name: 'Kubernetes', icon: <Layers size={16} />, color: 'text-blue-700' },
-    { name: 'DevOps', icon: <Cpu size={16} />, color: 'text-red-500' },
-    { name: 'Java', icon: <Code2 size={16} />, color: 'text-red-600' },
-    { name: 'Jenkins', icon: <Zap size={16} />, color: 'text-red-400' },
-  ];
-
-  return (
-    <section className="border-y border-[var(--border-subtle)] bg-[var(--bg-card)]/50 overflow-hidden py-8">
-      <div className="flex">
-        <motion.div
-          className="flex flex-shrink-0 gap-16 px-8"
-          initial={{ x: 0 }}
-          animate={{ x: "-50%" }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-        >
-          {[...stack, ...stack, ...stack].map((tech, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all duration-300 cursor-default group"
-            >
-              <div className={`${tech.color} group-hover:scale-110 transition-transform duration-300`}>
-                {tech.icon}
-              </div>
-              <span className="font-mono text-xs font-bold uppercase tracking-widest group-hover:gradient-text transition-all duration-300">
-                {tech.name}
-              </span>
-              <div className="w-1 h-1 rounded-full bg-[var(--border-subtle)]" />
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-const Changelog = () => {
-  const logs = [
-    { version: 'v4.0.0', date: '2025', title: 'DevOps Infrastructure', desc: 'Automating deployments with Kubernetes, AWS, and AI-powered CI/CD pipelines for faster build times and reliable production releases.', color: 'from-emerald-500 to-teal-500', status: 'Current' },
-    { version: 'v3.0.0', date: '2024', title: 'Cloud Engineering', desc: 'Orchestrating deployments with Kubernetes and managing AWS resources.', color: 'from-blue-500 to-cyan-500', status: 'Archived' },
-    { version: 'v2.1.0', date: '2023', title: 'DevOps Transition', desc: 'Shifted focus to CI/CD pipelines, Jenkins, and Docker containerization.', color: 'from-purple-500 to-pink-500', status: 'Archived' },
-    { version: 'v1.0.0', date: '2021', title: 'Java Developer', desc: 'Started career building robust Java applications and backend systems.', color: 'from-amber-500 to-orange-500', status: 'Archived' },
-  ];
-
-  return (
-    <section id="logs" className="py-24 border-b border-[var(--border-subtle)] relative overflow-hidden">
-      <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader number="1" title="Changelog" gradient />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {logs.map((log, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.5 }}
-            >
-              <div className="gradient-border-card h-full">
-                <div className="relative p-6 bg-[var(--bg-card)] rounded-xl border border-[var(--border-subtle)] hover:border-transparent transition-all duration-500 h-full group">
-                  <div className="flex items-start justify-between mb-4">
-                    <span className={`font-mono text-xs px-2.5 py-1 rounded-full bg-gradient-to-r ${log.color} text-white font-bold shadow-lg`}>
-                      {log.version}
-                    </span>
-                    <span className="font-mono text-[10px] text-[var(--text-secondary)]">{log.date}</span>
-                  </div>
-                  <h3 className="text-lg font-bold mb-2 text-[var(--text-primary)] group-hover:gradient-text transition-all duration-300">{log.title}</h3>
-                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{log.desc}</p>
-                  <div className="mt-4 pt-4 border-t border-[var(--border-subtle)] flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${log.status === 'Current' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`} />
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-secondary)]">{log.status}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const StackLayer = ({ title, items }) => (
-  <div className="mb-10 last:mb-0">
-    <h3 className="font-mono text-xs text-[var(--accent-action)] mb-6 uppercase tracking-widest font-bold flex items-center gap-2">
-      <span className="w-4 h-px bg-[var(--accent-action)]" />
-      {title}
-    </h3>
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-    >
-      {items.map((item, i) => (
-        <motion.div
-          variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-          key={i}
-          className="glass-card rounded-xl p-5 group cursor-default"
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2.5 rounded-lg bg-gradient-to-br from-[var(--accent-action)]/20 to-purple-500/20 border border-[var(--accent-action)]/10 group-hover:scale-110 transition-all duration-300">
-              {item.icon}
-            </div>
-            <span className="font-bold text-[var(--text-primary)] group-hover:gradient-text transition-all duration-300">{item.name}</span>
-          </div>
-          <p className="text-xs text-[var(--text-secondary)] leading-relaxed pl-2 border-l-2 border-[var(--border-subtle)] pl-3">{item.desc}</p>
-        </motion.div>
-      ))}
-    </motion.div>
-  </div>
-);
-
-const Skills = () => (
-  <section className="py-24 border-b border-[var(--border-subtle)] relative">
-    <div className="max-w-6xl mx-auto px-6">
-      <SectionHeader number="2" title="Dependency Graph" gradient />
-      <StackLayer
-        title="Layer 1: Infrastructure"
-        items={[
-          { name: 'Docker', icon: <Server size={16} className="text-blue-500" />, desc: 'Containerization for consistent dev/prod parity with multi-stage builds.' },
-          { name: 'AWS', icon: <Activity size={16} className="text-orange-500" />, desc: 'EC2, S3, Lambda, and EKS for scalable cloud-native architecture.' },
-          { name: 'Kubernetes', icon: <Layers size={16} className="text-blue-700" />, desc: 'Orchestrating microservices with auto-scaling and zero-downtime deployments.' },
-        ]}
-      />
-      <StackLayer
-        title="Layer 2: Application"
-        items={[
-          { name: 'React', icon: <Layout size={16} className="text-sky-500" />, desc: 'Component-driven UI architecture with hooks and performant rendering.' },
-          { name: 'Python', icon: <Terminal size={16} className="text-yellow-500" />, desc: 'Automation scripts, data pipelines, and backend microservices.' },
-          { name: 'Java', icon: <Code2 size={16} className="text-red-500" />, desc: 'Enterprise-grade applications with Spring Boot and microservices patterns.' },
-          { name: 'PostgreSQL', icon: <Database size={16} className="text-blue-400" />, desc: 'Relational data modeling, complex queries, and performance optimization.' },
-          { name: 'Jenkins', icon: <Zap size={16} className="text-red-400" />, desc: 'CI/CD pipelines with automated testing, building, and deployment stages.' },
-          { name: 'Terraform', icon: <Globe size={16} className="text-purple-500" />, desc: 'Infrastructure as Code for reproducible, version-controlled cloud resources.' },
-        ]}
-      />
-    </div>
-  </section>
-);
-
-const SkillsRadar = () => {
-  const skills = [
-    { name: 'Frontend', level: 90 },
-    { name: 'Backend', level: 85 },
-    { name: 'DevOps', level: 75 },
-    { name: 'System Design', level: 80 },
-    { name: 'Database', level: 85 },
-  ];
-
-  const size = 320;
-  const center = size / 2;
-  const radius = 110;
-  const angleStep = (Math.PI * 2) / skills.length;
-
-  const getCoordinates = (value, index) => {
-    const angle = -Math.PI / 2 + index * angleStep;
-    const r = (value / 100) * radius;
-    const x = center + r * Math.cos(angle);
-    const y = center + r * Math.sin(angle);
-    return [x, y];
-  };
-
-  const levels = [25, 50, 75, 100];
-
-  const pathData = skills.map((skill, i) => {
-    const [x, y] = getCoordinates(skill.level, i);
-    return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-  }).join(' ') + ' Z';
-
-  return (
-    <section id="metrics" className="py-24 border-b border-[var(--border-subtle)] relative overflow-hidden">
-      <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader number="3" title="Technical Proficiency" gradient />
-        <div className="flex flex-col lg:flex-row items-center gap-16">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-action)]/20 to-purple-500/20 blur-3xl rounded-full -z-10" />
-            <svg width={size} height={size} className="overflow-visible">
-              {levels.map((level, i) => (
-                <polygon
-                  key={i}
-                  points={skills.map((_, j) => getCoordinates(level, j).join(',')).join(' ')}
-                  fill="none"
-                  stroke="var(--border-subtle)"
-                  strokeWidth="1"
-                  strokeDasharray="4 4"
-                  className="opacity-40"
-                />
-              ))}
-              {skills.map((_, i) => {
-                const [x, y] = getCoordinates(100, i);
-                return (
-                  <line
-                    key={i}
-                    x1={center}
-                    y1={center}
-                    x2={x}
-                    y2={y}
-                    stroke="var(--border-subtle)"
-                    strokeWidth="1"
-                    className="opacity-30"
-                  />
-                );
-              })}
-              <motion.path
-                initial={{ pathLength: 0, opacity: 0 }}
-                whileInView={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                d={pathData}
-                fill="url(#radarGradient)"
-                fillOpacity="0.2"
-                stroke="url(#radarGradient)"
-                strokeWidth="2"
-              />
-              <defs>
-                <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="var(--accent-action)" />
-                  <stop offset="100%" stopColor="#7C3AED" />
-                </linearGradient>
-              </defs>
-              {skills.map((skill, i) => {
-                const [x, y] = getCoordinates(skill.level, i);
-                return (
-                  <motion.g key={i}>
-                    <motion.circle
-                      initial={{ scale: 0 }}
-                      whileInView={{ scale: 1 }}
-                      transition={{ delay: 1 + i * 0.1, type: "spring" }}
-                      cx={x}
-                      cy={y}
-                      r="5"
-                      fill="var(--bg-primary)"
-                      stroke="url(#radarGradient)"
-                      strokeWidth="2.5"
-                      className="drop-shadow-lg"
-                    />
-                    <motion.circle
-                      initial={{ scale: 0 }}
-                      whileInView={{ scale: 1 }}
-                      transition={{ delay: 1 + i * 0.1, type: "spring" }}
-                      cx={x}
-                      cy={y}
-                      r="2"
-                      fill="var(--accent-action)"
-                    />
-                  </motion.g>
-                );
-              })}
-              {skills.map((skill, i) => {
-                const [x, y] = getCoordinates(125, i);
-                return (
-                  <text
-                    key={i}
-                    x={x}
-                    y={y}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="text-[11px] font-mono fill-[var(--text-secondary)] uppercase tracking-wider font-bold"
+              <div className="flex flex-wrap gap-2">
+                {focusAreas.map((area) => (
+                  <span
+                    key={area}
+                    className="px-3.5 py-1.5 rounded-full bg-[#050406]/70 border border-[var(--border-subtle)] text-xs font-mono text-[var(--text-primary)]"
                   >
-                    {skill.name}
-                  </text>
-                );
-              })}
-            </svg>
-          </motion.div>
-
-          <div className="flex-1 w-full space-y-6">
-            <div className="p-6 glass-card rounded-2xl font-mono text-xs">
-              <div className="flex items-center justify-between mb-5 border-b border-[var(--border-subtle)] pb-3">
-                <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                  <Activity size={14} />
-                  <span>github_analysis.log</span>
-                </div>
-                <span className="text-[var(--accent-action)] animate-pulse text-[10px] flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-[var(--accent-action)] rounded-full" />
-                  Live
-                </span>
+                    {area}
+                  </span>
+                ))}
               </div>
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <span className="text-[var(--text-secondary)]">10:42:01</span>
-                  <span>Fetching public repositories... <span className="text-[var(--accent-action)]">Done (12 found)</span></span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-[var(--text-secondary)]">10:42:02</span>
-                  <span>Analyzing language distribution...</span>
-                </div>
-                <div className="pl-16 space-y-1 text-[var(--text-secondary)] py-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-20 h-1.5 rounded-full bg-[var(--border-subtle)] overflow-hidden">
-                      <div className="h-full w-[45%] bg-yellow-500 rounded-full" />
-                    </div>
-                    <span>Python 45%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-20 h-1.5 rounded-full bg-[var(--border-subtle)] overflow-hidden">
-                      <div className="h-full w-[30%] bg-sky-500 rounded-full" />
-                    </div>
-                    <span>JavaScript 30%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-20 h-1.5 rounded-full bg-[var(--border-subtle)] overflow-hidden">
-                      <div className="h-full w-[25%] bg-red-500 rounded-full" />
-                    </div>
-                    <span>Shell/Other 25%</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-[var(--text-secondary)]">10:42:03</span>
-                  <span>Calculating technical competency matrix...</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-[var(--text-secondary)]">10:42:04</span>
-                  <span className="text-[var(--accent-active)]">{'>>'} Proficiency model updated successfully.</span>
-                </div>
-              </div>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="p-4 glass-card rounded-xl"
-              >
-                <div className="text-[var(--text-secondary)] text-[10px] uppercase mb-2 font-mono tracking-widest">Top Skill</div>
-                <div className="font-bold text-[var(--text-primary)] group-hover:gradient-text">Frontend Architecture</div>
-                <div className="mt-2 w-full h-1.5 rounded-full bg-[var(--border-subtle)] overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '90%' }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.5, duration: 1 }}
-                    className="h-full rounded-full bg-gradient-to-r from-[var(--accent-action)] to-purple-500"
-                  />
-                </div>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="p-4 glass-card rounded-xl"
-              >
-                <div className="text-[var(--text-secondary)] text-[10px] uppercase mb-2 font-mono tracking-widest">Focus Area</div>
-                <div className="font-bold text-[var(--text-primary)]">Distributed Systems</div>
-                <div className="mt-2 w-full h-1.5 rounded-full bg-[var(--border-subtle)] overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '80%' }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.5, duration: 1 }}
-                    className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
-                  />
-                </div>
-              </motion.div>
-            </div>
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.6 }}
+              className="flex flex-wrap items-center gap-4 pt-2"
+            >
+              <LuxuryButton href="#projects" primary icon={ArrowUpRight}>
+                Explore Projects ↗
+              </LuxuryButton>
+              <LuxuryButton href="#experience" icon={Briefcase}>
+                View Experience
+              </LuxuryButton>
+              
+              <div className="flex items-center gap-2 pl-2">
+                <motion.a
+                  whileHover={{ y: -2 }}
+                  href="https://github.com/semmozhiyan-dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3.5 rounded-2xl bg-[#0E0B11] border border-[var(--border-subtle)] hover:border-[var(--border-wine)] text-[var(--text-secondary)] hover:text-white transition-all shadow-sm"
+                  title="GitHub"
+                >
+                  <Github size={16} />
+                </motion.a>
+                <motion.a
+                  whileHover={{ y: -2 }}
+                  href="https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3.5 rounded-2xl bg-[#0E0B11] border border-[var(--border-subtle)] hover:border-[var(--border-wine)] text-[var(--text-secondary)] hover:text-white transition-all shadow-sm"
+                  title="LinkedIn"
+                >
+                  <Linkedin size={16} />
+                </motion.a>
+                <motion.a
+                  whileHover={{ y: -2 }}
+                  href="mailto:semmozhiyan40@gmail.com"
+                  className="p-3.5 rounded-2xl bg-[#0E0B11] border border-[var(--border-subtle)] hover:border-[var(--border-wine)] text-[var(--text-secondary)] hover:text-white transition-all shadow-sm"
+                  title="Email"
+                >
+                  <Mail size={16} />
+                </motion.a>
+              </div>
+            </motion.div>
           </div>
+
+          {/* 3D Interactive Portrait */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.25, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-sm"
+            >
+              <TiltCard3D className="shadow-card-3d">
+                {/* Image Container */}
+                <div className="relative rounded-[22px] overflow-hidden bg-[#0A070D] aspect-[3/4]">
+                  <img
+                    src={profileImg}
+                    alt="Semmozhiyan — Site Reliability Engineer"
+                    onError={(e) => { e.target.onerror = null; e.target.src = "https://github.com/semmozhiyan-dev.png"; }}
+                    className="w-full h-full object-cover object-center filter contrast-[1.05] brightness-[0.92] hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                  
+                  {/* Subtle Gradient Veil */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050406] via-[#050406]/20 to-transparent opacity-85" />
+
+                  {/* Top Location Badge */}
+                  <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#050406]/85 border border-white/10 backdrop-blur-md">
+                    <MapPin size={11} className="text-[var(--accent-ruby)]" />
+                    <span className="font-mono text-[10px] text-[var(--text-primary)]">India · IST</span>
+                  </div>
+
+                  {/* Bottom Operational Plaque */}
+                  <div className="absolute bottom-4 inset-x-4 p-5 rounded-2xl bg-[#0E0B11]/90 border border-[var(--border-wine)] backdrop-blur-xl shadow-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--text-muted)] block">
+                          Current Role
+                        </span>
+                        <div className="font-serif font-bold text-sm text-[var(--text-primary)] flex items-center gap-2">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent-ruby)] opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent-ruby)]" />
+                          </span>
+                          NexGenAds Technologies
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--text-muted)] block">
+                          Role
+                        </span>
+                        <span className="font-mono text-xs font-bold text-[var(--accent-vibrant)]">
+                          SRE
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </TiltCard3D>
+
+              <div className="mt-5 text-center font-mono text-[11px] text-[var(--text-muted)]">
+                NexGenAds Technologies Pvt. Ltd. · SRE & Software Engineer
+              </div>
+            </motion.div>
+          </div>
+
         </div>
       </div>
     </section>
   );
 };
 
-const ProjectCard = ({ id, title, stack, diff, link, variants, gradient }) => (
-  <motion.a
-    href={link}
-    target="_blank"
-    rel="noopener noreferrer"
-    variants={variants}
-    whileHover={{ y: -4 }}
-    className="gradient-border-card block"
-  >
-    <div className="relative p-6 bg-[var(--bg-card)] rounded-xl border border-[var(--border-subtle)] hover:border-transparent transition-all duration-500 h-full group">
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg`}>
-            <Box size={14} className="text-white" />
-          </div>
-          <span className="font-mono text-xs text-[var(--text-secondary)]">{id}</span>
-        </div>
-        <ExternalLink size={16} className="text-[var(--text-secondary)] group-hover:text-[var(--accent-action)] group-hover:rotate-45 transition-all duration-300" />
-      </div>
-      <h3 className="text-lg font-bold mb-3 text-[var(--text-primary)] group-hover:gradient-text transition-all duration-300">{title}</h3>
-      <div className="flex flex-wrap gap-2 mb-6">
-        {stack.map(tech => (
-          <span key={tech} className="px-2.5 py-1 bg-[var(--bg-primary)] border border-[var(--border-subtle)] text-[10px] font-mono text-[var(--text-secondary)] rounded-md">
-            {tech}
-          </span>
-        ))}
-      </div>
-      <div className="font-mono text-xs border-t border-[var(--border-subtle)] pt-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-            <Zap size={12} />
-            <span>Latency: <span className="text-[var(--accent-active)] font-bold">{diff.latency}</span></span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-            <Activity size={12} />
-            <span>Throughput: <span className="text-[var(--accent-active)] font-bold">{diff.throughput}</span></span>
-          </div>
-        </div>
-      </div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        className="absolute inset-0 rounded-xl bg-gradient-to-br from-[var(--accent-action)]/5 via-transparent to-purple-500/5 pointer-events-none transition-opacity duration-500"
-      />
-    </div>
-  </motion.a>
-);
+// --- Professional Experience Section ---
 
-const Projects = () => {
-  const projects = [
+const ProfessionalExperience = () => {
+  const responsibilities = [
+    'Support the reliability and operational stability of web applications and backend services.',
+    'Work with deployment pipelines, infrastructure configuration, and application environments.',
+    'Monitor application health, investigate issues, and troubleshoot service failures.',
+    'Collaborate with development teams to improve deployment consistency and production readiness.',
+    'Contribute to performance optimization, incident investigation, and operational improvements.'
+  ];
+
+  const tools = [
+    'Docker',
+    'Kubernetes',
+    'Jenkins',
+    'Prometheus',
+    'Grafana',
+    'NGINX',
+    'Linux',
+    'AWS'
+  ];
+
+  const companyProjects = [
     {
-      id: 'RFC-001', title: 'AirPreQ Prediction Engine',
-      stack: ['Python', 'Flask', 'ML'],
-      diff: { latency: '-150ms', throughput: 'Real-time' },
-      link: 'https://github.com/semmozhiyan-dev/AirPreQ',
-      gradient: 'from-emerald-500 to-teal-500'
+      title: '1Grow',
+      badge: 'DIGITAL MENU & ORDERING',
+      desc: 'A digital menu and customer ordering platform designed to help hospitality businesses present menus online and streamline the ordering experience.',
+      focus: 'Reliability, deployment, application monitoring, and troubleshooting, based on actual contributions.',
+      icon: Utensils
     },
     {
-      id: 'RFC-002', title: 'Wanderlite Tourism',
-      stack: ['Web', 'Travel', 'UI'],
-      diff: { latency: '99.9%', throughput: 'Uptime' },
-      link: 'https://github.com/semmozhiyan-dev/wanderlite-travel-and-tourism',
-      gradient: 'from-sky-500 to-blue-600'
+      title: 'CRM Platform',
+      badge: 'BUSINESS OPERATIONS',
+      desc: 'A customer relationship management platform designed to centralize customer information, support business workflows, and improve operational visibility.',
+      focus: 'Service health, deployment operations, backups, monitoring, and incident troubleshooting where applicable.',
+      icon: Database
     },
     {
-      id: 'RFC-003', title: 'Media Platform',
-      stack: ['React', 'Node', 'Stream'],
-      diff: { latency: '< 50ms', throughput: 'High-Res' },
-      link: 'https://github.com/semmozhiyan-dev/Media-platform',
-      gradient: 'from-purple-500 to-pink-500'
-    },
-    {
-      id: 'RFC-004', title: 'Techno 3.0',
-      stack: ['Tech', 'Event', 'System'],
-      diff: { latency: 'v3.0', throughput: 'Stable' },
-      link: 'https://github.com/semmozhiyan-dev/Techno_3.0',
-      gradient: 'from-amber-500 to-orange-500'
-    },
-    {
-      id: 'RFC-005', title: 'Java Systems Core',
-      stack: ['Java', 'OOP', 'Structures'],
-      diff: { latency: 'O(1)', throughput: 'Optimized' },
-      link: 'https://github.com/semmozhiyan-dev/java--learn',
-      gradient: 'from-red-500 to-rose-500'
-    },
-    {
-      id: 'RFC-006', title: 'Daily Commit Tracker',
-      stack: ['Git', 'Automation', 'CI/CD'],
-      diff: { latency: 'Daily', throughput: 'Consistent' },
-      link: 'https://github.com/semmozhiyan-dev/daily-commit',
-      gradient: 'from-indigo-500 to-violet-500'
+      title: 'MultiMenu POS',
+      badge: 'POINT OF SALE & INVENTORY',
+      desc: 'A point-of-sale system designed to support billing, inventory operations, order processing, and day-to-day restaurant workflows.',
+      focus: 'End-to-end verification, backend and frontend troubleshooting, service reliability, and deployment support.',
+      icon: CreditCard
     }
   ];
 
   return (
-    <section id="rfc" className="py-24 border-b border-[var(--border-subtle)] relative overflow-hidden">
+    <section id="experience" className="py-28 border-b border-[var(--border-subtle)] relative">
       <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader number="4" title="Architecture Reviews (RFCs)" gradient />
+        <SectionHeader
+          number="01"
+          subtitle="Work History & Roles"
+          title="Professional Experience"
+        />
+
+        {/* Company Overview Card */}
         <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mb-14"
         >
-          {projects.map((p, i) => (
-            <ProjectCard key={i} {...p} variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }} />
-          ))}
+          <TiltCard3D className="p-8 sm:p-10 border border-[var(--border-wine)]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-6 mb-8">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-wine)]/30 border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-[10px] uppercase tracking-wider mb-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)] animate-pulse" />
+                  Current Role
+                </div>
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
+                  Site Reliability Engineer
+                </h3>
+                <span className="font-mono text-sm text-[var(--accent-vibrant)] font-semibold">
+                  NexGenAds Technologies Pvt. Ltd.
+                </span>
+              </div>
+              <div className="text-left md:text-right">
+                <span className="font-mono text-xs text-[var(--text-muted)] block">Focus</span>
+                <span className="text-xs text-[var(--text-secondary)] font-medium">
+                  Reliability · Deployments · Monitoring
+                </span>
+              </div>
+            </div>
+
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light mb-8 max-w-3xl">
+              Working on web applications and business-critical systems with a focus on system reliability, deployment workflows, monitoring, and operational efficiency.
+            </p>
+
+            {/* Key Responsibilities */}
+            <div className="mb-8">
+              <h4 className="font-mono text-xs uppercase tracking-widest text-[var(--text-muted)] font-semibold mb-4">
+                Key Responsibilities
+              </h4>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {responsibilities.map((resp, i) => (
+                  <li key={i} className="flex items-start gap-3 text-xs text-[var(--text-secondary)] font-light leading-relaxed">
+                    <CheckCircle2 size={15} className="text-[var(--accent-ruby)] shrink-0 mt-0.5" />
+                    <span>{resp}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Tools Utilized */}
+            <div className="pt-6 border-t border-[var(--border-subtle)]">
+              <h4 className="font-mono text-[11px] uppercase tracking-widest text-[var(--text-muted)] font-semibold mb-3">
+                Core Tooling & Technologies
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {tools.map((tool) => (
+                  <span
+                    key={tool}
+                    className="px-3 py-1 rounded-lg bg-[#050406]/80 border border-white/10 font-mono text-xs text-[var(--text-primary)]"
+                  >
+                    {tool}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </TiltCard3D>
         </motion.div>
+
+        {/* Professional Projects at NexGenAds */}
+        <div>
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-ruby)]" />
+            <h3 className="font-serif text-xl font-bold text-[var(--text-primary)]">
+              Professional Projects at NexGenAds
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {companyProjects.map((p, i) => (
+              <motion.div
+                key={p.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+              >
+                <TiltCard3D className="p-8 h-full flex flex-col justify-between group">
+                  <div>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-10 h-10 rounded-2xl bg-[var(--accent-wine)]/25 border border-[var(--border-wine)] text-[var(--accent-vibrant)] flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <p.icon size={18} />
+                      </div>
+                      <span className="font-mono text-[9px] text-[var(--accent-ruby)] font-bold tracking-widest uppercase">
+                        {p.badge}
+                      </span>
+                    </div>
+
+                    <h4 className="font-serif text-lg font-bold text-[var(--text-primary)] mb-3 group-hover:gradient-text transition-all">
+                      {p.title}
+                    </h4>
+
+                    <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-light mb-6">
+                      {p.desc}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-[var(--border-subtle)]">
+                    <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">
+                      Contribution Focus
+                    </span>
+                    <p className="text-[11px] text-[var(--text-secondary)] font-light leading-relaxed">
+                      {p.focus}
+                    </p>
+                  </div>
+                </TiltCard3D>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   );
 };
 
+// --- Personal Projects Section ---
+
+const PersonalProjects = () => {
+  const projects = [
+    {
+      title: 'Foodela',
+      badge: 'FOOD ORDERING PLATFORM',
+      desc: 'A food ordering application built with a modern frontend and backend architecture to deliver a responsive browsing and ordering experience.',
+      stack: ['React', 'Tailwind CSS', 'Framer Motion', 'Java Spring Boot', 'Supabase'],
+      links: {
+        demo: 'https://github.com/semmozhiyan-dev',
+        code: 'https://github.com/semmozhiyan-dev',
+        caseStudy: null
+      },
+      icon: Utensils
+    },
+    {
+      title: 'Vendora',
+      badge: 'FULL-STACK E-COMMERCE',
+      desc: 'A full-stack e-commerce platform featuring product discovery, user authentication, shopping carts, order management, and payment integration.',
+      stack: ['React', 'Vite', 'Node.js', 'Express.js', 'MongoDB Atlas', 'Razorpay'],
+      links: {
+        demo: 'https://github.com/semmozhiyan-dev',
+        code: 'https://github.com/semmozhiyan-dev',
+        caseStudy: null
+      },
+      icon: ShoppingCart
+    },
+    {
+      title: 'Orivex',
+      badge: 'SUBSCRIPTION & REVENUE MANAGEMENT',
+      status: 'In Development',
+      desc: 'A subscription management platform designed around recurring billing, payment workflows, tenant administration, and revenue operations.',
+      stack: ['Next.js', 'NestJS', 'Prisma', 'PostgreSQL', 'Redis', 'Docker', 'Kubernetes', 'Jenkins', 'Prometheus', 'Grafana'],
+      links: {
+        demo: null,
+        code: 'https://github.com/semmozhiyan-dev',
+        caseStudy: null
+      },
+      icon: CreditCard
+    }
+  ];
+
+  return (
+    <section id="projects" className="py-28 border-b border-[var(--border-subtle)] relative">
+      <div className="max-w-6xl mx-auto px-6">
+        <SectionHeader
+          number="02"
+          subtitle="Independent Software Products"
+          title="Personal Projects & Products"
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {projects.map((p, i) => (
+            <motion.div
+              key={p.title}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.6 }}
+            >
+              <TiltCard3D className="p-8 h-full flex flex-col justify-between group">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="w-10 h-10 rounded-2xl bg-[var(--accent-wine)]/25 border border-[var(--border-wine)] text-[var(--accent-vibrant)] flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <p.icon size={18} />
+                    </div>
+                    {p.status ? (
+                      <span className="font-mono text-[9px] px-2.5 py-1 rounded-full bg-[var(--accent-wine)]/30 border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-bold tracking-widest uppercase">
+                        {p.status}
+                      </span>
+                    ) : (
+                      <span className="font-mono text-[9px] text-[var(--accent-ruby)] font-bold tracking-widest uppercase">
+                        {p.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="font-serif text-xl font-bold text-[var(--text-primary)] mb-3 group-hover:gradient-text transition-all">
+                    {p.title}
+                  </h3>
+
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-light mb-6">
+                    {p.desc}
+                  </p>
+
+                  <div className="mb-6">
+                    <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-2">
+                      Tech Stack
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {p.stack.map((tech) => (
+                        <span
+                          key={tech}
+                          className="px-2.5 py-1 rounded-md bg-[#050406]/70 border border-white/5 font-mono text-[10px] text-[var(--text-secondary)]"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-5 border-t border-[var(--border-subtle)] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {p.links.demo && (
+                      <a
+                        href={p.links.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--accent-vibrant)] hover:text-white font-semibold transition-colors"
+                      >
+                        <span>Live Demo</span>
+                        <ArrowUpRight size={12} />
+                      </a>
+                    )}
+                    {p.links.code && (
+                      <a
+                        href={p.links.code}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)] hover:text-white transition-colors"
+                      >
+                        <Github size={13} />
+                        <span>GitHub</span>
+                      </a>
+                    )}
+                  </div>
+                  {p.status && (
+                    <span className="font-mono text-[10px] text-[var(--text-muted)]">
+                      Active Build
+                    </span>
+                  )}
+                </div>
+              </TiltCard3D>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// --- The Journey Homepage Preview Section ---
+
+const JourneyPreview = () => {
+  const quotes = [
+    {
+      num: '01',
+      category: 'THE JOURNEY',
+      quote: 'I am not building a career just to reach a destination. I am building the skills to choose my own destination.'
+    },
+    {
+      num: '02',
+      category: 'MONEY & FREEDOM',
+      quote: 'Money is not the finish line. It is one of the tools that gives me the freedom to choose what comes next.'
+    },
+    {
+      num: '03',
+      category: 'ENTREPRENEURSHIP',
+      quote: 'One day, I want to stop asking whether an idea is possible and have the experience, resources, and courage to build it.'
+    },
+    {
+      num: '04',
+      category: 'DISCIPLINE',
+      quote: 'The future I want is being built by the decisions I make when nobody is watching.'
+    }
+  ];
+
+  return (
+    <section id="journey" className="py-28 border-b border-[var(--border-subtle)] relative">
+      <div className="max-w-6xl mx-auto px-6">
+        <SectionHeader
+          number="03"
+          subtitle="The Road to Building Something of My Own"
+          title="The Journey & Founder Ambition"
+        />
+
+        {/* Founder Ambition Lead Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mb-14"
+        >
+          <TiltCard3D className="p-8 sm:p-12 border border-[var(--border-wine)] shadow-wine-md">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="lg:col-span-8 space-y-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-wine)]/25 border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-[10px] uppercase tracking-wider">
+                  <Sparkles size={11} className="text-[var(--accent-ruby)]" />
+                  <span>A PERSONAL STORY · AN EVOLVING VISION</span>
+                </div>
+
+                <h3 className="font-serif text-2xl sm:text-4xl font-bold text-[var(--text-primary)] leading-snug">
+                  Learn First. Build Experience. Create Something of My Own.
+                </h3>
+
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light max-w-2xl">
+                  My long-term ambition is to build a technology startup of my own. I don't want to rush into entrepreneurship without understanding what it takes to build a sustainable business. My plan is to gain experience in the industry, strengthen my technical skills, learn from real business problems, and build financial stability before taking that step.
+                </p>
+
+                <div className="pt-2">
+                  <Link
+                    to="/journey"
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] text-white font-mono text-xs font-bold tracking-widest uppercase shadow-wine-md hover:shadow-wine-lg transition-all"
+                  >
+                    <span>Read the Full Journey Manifesto</span>
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4 p-6 rounded-2xl bg-[#050406]/70 border border-white/5 space-y-4">
+                <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold block">
+                  Walkthrough Chapters
+                </span>
+                <ul className="space-y-2.5 font-mono text-xs text-[var(--text-secondary)]">
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>01. The Beginning</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>02. Learning to Build</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>03. Systems Behind Software</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>04. Long-Term Vision</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>05. Why Money Matters</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>06. Definition of Success</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </TiltCard3D>
+        </motion.div>
+
+        {/* 4 Quotes Grid */}
+        <div>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-ruby)]" />
+              <h3 className="font-serif text-xl font-bold text-[var(--text-primary)]">
+                Guiding Philosophies & Mottos
+              </h3>
+            </div>
+            <Link
+              to="/journey"
+              className="font-mono text-xs text-[var(--accent-vibrant)] hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>Explore all principles</span>
+              <ArrowUpRight size={13} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {quotes.map((q, i) => (
+              <motion.div
+                key={q.num}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.6 }}
+              >
+                <TiltCard3D className="p-8 h-full flex flex-col justify-between group shadow-sm">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-[var(--accent-ruby)]">
+                          {q.num}
+                        </span>
+                        <span className="text-[var(--text-muted)]">/</span>
+                        <span className="font-mono text-[9px] text-[var(--text-muted)] uppercase tracking-widest">
+                          {q.category}
+                        </span>
+                      </div>
+                      <Quote size={16} className="text-[var(--accent-ruby)]/40" />
+                    </div>
+
+                    <blockquote className="font-serif text-base sm:text-lg text-[var(--text-primary)] leading-relaxed italic group-hover:gradient-text transition-all">
+                      “{q.quote}”
+                    </blockquote>
+                  </div>
+
+                  <div className="mt-6 pt-3 border-t border-[var(--border-subtle)] text-[10px] font-mono text-[var(--text-muted)]">
+                    Original personal motto · Semmozhiyan
+                  </div>
+                </TiltCard3D>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+// --- Lessons Life Taught Me Homepage Preview Section ---
+
+const LessonsPreview = () => {
+  const highlights = [
+    {
+      num: '01',
+      title: 'Patience',
+      subtitle: 'Not Everything Happens on My Timeline',
+      quote: 'I cannot control how quickly every result arrives, but I can control the quality of the effort I bring today.'
+    },
+    {
+      num: '02',
+      title: 'Failure',
+      subtitle: 'A Result Is Not My Identity',
+      quote: 'Failure can be expensive, but repeating it without learning is even more expensive.'
+    },
+    {
+      num: '04',
+      title: 'Consistency',
+      subtitle: 'Small Actions Compound',
+      quote: 'My future is influenced not only by my biggest decisions, but also by the small ones I repeat.'
+    }
+  ];
+
+  return (
+    <section id="lessons" className="py-28 border-b border-[var(--border-subtle)] relative">
+      <div className="max-w-6xl mx-auto px-6">
+        <SectionHeader
+          number="04"
+          subtitle="Experiential Wisdom & Reflections"
+          title="Lessons Life Taught Me"
+        />
+
+        {/* Lead Narrative Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mb-14"
+        >
+          <TiltCard3D className="p-8 sm:p-12 border border-[var(--border-wine)] shadow-wine-md">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="lg:col-span-8 space-y-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-wine)]/25 border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-[10px] uppercase tracking-wider">
+                  <Sparkles size={11} className="text-[var(--accent-ruby)]" />
+                  <span>REFLECTIONS ON GROWTH, PATIENCE & PURPOSE</span>
+                </div>
+
+                <h3 className="font-serif text-2xl sm:text-4xl font-bold text-[var(--text-primary)] leading-snug">
+                  Some lessons are learned through success. Others change you through experience.
+                </h3>
+
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light max-w-2xl">
+                  Life doesn't always teach its most important lessons through achievements or advice. Sometimes, the lessons come from waiting longer than expected, making the wrong decision, or realizing that the way I once viewed the world was incomplete. I'm not writing these lessons because I have everything figured out. I'm writing them because I'm still learning.
+                </p>
+
+                <div className="pt-2">
+                  <Link
+                    to="/lessons"
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] text-white font-mono text-xs font-bold tracking-widest uppercase shadow-wine-md hover:shadow-wine-lg transition-all"
+                  >
+                    <span>Explore All 8 Life Lessons</span>
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4 p-6 rounded-2xl bg-[#050406]/70 border border-white/5 space-y-4">
+                <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold block">
+                  The Eight Chapters
+                </span>
+                <ul className="space-y-2.5 font-mono text-xs text-[var(--text-secondary)]">
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>01. Patience & Timeline</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>02. Failure & Identity</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>03. Trust & Character</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>04. Consistency & Habits</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>05. Curating Your Circle</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>06. Embracing Uncertainty</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>07. Money as a Tool</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
+                    <span>08. Self-Respect & Growth</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </TiltCard3D>
+        </motion.div>
+
+        {/* 3 Spotlight Cards Grid */}
+        <div>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-ruby)]" />
+              <h3 className="font-serif text-xl font-bold text-[var(--text-primary)]">
+                Core Realizations
+              </h3>
+            </div>
+            <Link
+              to="/lessons"
+              className="font-mono text-xs text-[var(--accent-vibrant)] hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>Read all 8 chapters</span>
+              <ArrowUpRight size={13} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {highlights.map((h, i) => (
+              <motion.div
+                key={h.num}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.6 }}
+              >
+                <TiltCard3D className="p-8 h-full flex flex-col justify-between group shadow-sm">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-[var(--accent-ruby)]">
+                          LESSON {h.num}
+                        </span>
+                      </div>
+                      <Quote size={16} className="text-[var(--accent-ruby)]/40" />
+                    </div>
+
+                    <h4 className="font-serif text-xl font-bold text-[var(--text-primary)] mb-1">
+                      {h.title}
+                    </h4>
+                    <p className="font-mono text-xs text-[var(--text-muted)] mb-5">
+                      {h.subtitle}
+                    </p>
+
+                    <blockquote className="font-serif text-sm text-[var(--text-primary)] leading-relaxed italic group-hover:gradient-text transition-all">
+                      “{h.quote}”
+                    </blockquote>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-[var(--border-subtle)]">
+                    <Link
+                      to="/lessons"
+                      className="font-mono text-xs text-[var(--accent-ruby)] group-hover:text-[var(--accent-vibrant)] flex items-center gap-1.5 transition-colors font-semibold"
+                    >
+                      <span>Read chapter</span>
+                      <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                </TiltCard3D>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+// --- Contact ("Direct Transmission") ---
+
 const Contact = () => {
   const [submitted, setSubmitted] = React.useState(false);
-  const [formData, setFormData] = React.useState({ subject: 'Collaboration', message: '' });
+  const [formData, setFormData] = React.useState({ subject: 'SRE Collaboration', message: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -1166,237 +1198,184 @@ const Contact = () => {
     try {
       await fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
       setSubmitted(true);
-    } catch { /* ignore */ }
+    } catch {
+      // ignore
+    }
   };
 
   return (
-    <section id="connect" className="py-24 relative overflow-hidden">
-      <FloatingOrb className="top-[-5%] left-[-5%]" size="w-[35vw] h-[35vw]" color="var(--glow-blue)" delay={1} duration={20} />
+    <section id="contact" className="py-28 relative">
       <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader number="6" title="Open Ticket" gradient />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-3xl font-bold mb-4 text-[var(--text-primary)]">
-              Let's <span className="gradient-text">Build</span> Together
+        <SectionHeader
+          number="05"
+          subtitle="Direct Communication"
+          title="Initiate Transmission & Collaboration"
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          {/* Narrative & Direct Endpoints */}
+          <div className="lg:col-span-5 space-y-6">
+            <h3 className="font-serif text-3xl font-bold text-[var(--text-primary)]">
+              Let's Build for <span className="gradient-text italic font-normal">Permanence</span>.
             </h3>
-            <p className="text-[var(--text-secondary)] leading-relaxed mb-8 max-w-md">
-              Have a project in mind or just want to discuss tech? I'm always open to new opportunities and collaborations.
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light">
+              Whether you are discussing site reliability engineering roles, application deployments, or cloud infrastructure challenges, my inbox is open.
             </p>
-            <div className="space-y-4">
+
+            <div className="space-y-3 pt-2">
               {[
-                { icon: Mail, label: 'Email', value: 'semmozhiyan40@gmail.com', href: 'mailto:semmozhiyan40@gmail.com' },
-                { icon: Github, label: 'GitHub', value: '@semmozhiyan-dev', href: 'https://github.com/semmozhiyan-dev' },
-                { icon: Linkedin, label: 'LinkedIn', value: 'Semmozhiyan N S', href: 'https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/' },
+                { icon: Mail, label: 'Direct Email', value: 'semmozhiyan40@gmail.com', href: 'mailto:semmozhiyan40@gmail.com' },
+                { icon: Linkedin, label: 'LinkedIn Network', value: 'Semmozhiyan N S', href: 'https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/' },
+                { icon: Github, label: 'GitHub Repositories', value: '@semmozhiyan-dev', href: 'https://github.com/semmozhiyan-dev' },
               ].map((item, i) => (
-                <motion.a
+                <a
                   key={i}
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 + i * 0.1 }}
-                  className="flex items-center gap-4 p-4 glass-card rounded-xl group"
+                  className="flex items-center gap-4 p-4 rounded-2xl glass-card-3d group transition-all"
                 >
-                  <div className="p-2.5 rounded-lg bg-gradient-to-br from-[var(--accent-action)]/20 to-purple-500/20 border border-[var(--accent-action)]/10 group-hover:scale-110 transition-transform duration-300">
-                    <item.icon size={18} className="text-[var(--accent-action)]" />
+                  <div className="p-3 rounded-xl bg-[var(--accent-wine)]/25 border border-[var(--border-wine)] text-[var(--accent-vibrant)] group-hover:scale-105 transition-transform">
+                    <item.icon size={16} />
                   </div>
-                  <div>
-                    <div className="text-xs text-[var(--text-secondary)] font-mono">{item.label}</div>
-                    <div className="text-sm font-bold text-[var(--text-primary)] group-hover:gradient-text transition-all duration-300">{item.value}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-wider">{item.label}</div>
+                    <div className="text-xs font-bold text-[var(--text-primary)] group-hover:text-white truncate">{item.value}</div>
                   </div>
-                  <ArrowUpRight size={16} className="ml-auto text-[var(--text-secondary)] group-hover:text-[var(--accent-action)] transition-all" />
-                </motion.a>
+                  <ArrowUpRight size={14} className="text-[var(--text-muted)] group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                </a>
               ))}
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="glass-card rounded-2xl overflow-hidden">
-              <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-card)]/50">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                </div>
-                <span className="ml-2 font-mono text-xs text-[var(--text-secondary)]">contact_form.sh</span>
+          {/* Form */}
+          <div className="lg:col-span-7">
+            <div className="glass-card-3d rounded-3xl p-8 border border-[var(--border-wine)] shadow-wine-md">
+              <div className="border-b border-[var(--border-subtle)] pb-4 mb-6">
+                <h4 className="font-serif text-lg font-bold text-[var(--text-primary)]">Send Direct Message</h4>
+                <p className="text-xs text-[var(--text-secondary)] font-light">All communications are received with confidentiality.</p>
               </div>
+
               {submitted ? (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="p-12 text-center"
+                  className="py-14 text-center space-y-4"
                 >
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Check size={28} className="text-white" />
+                  <div className="w-16 h-16 rounded-full bg-[var(--accent-wine)]/30 border border-[var(--border-wine)] text-[var(--accent-vibrant)] flex items-center justify-center mx-auto">
+                    <Check size={28} />
                   </div>
-                  <h4 className="text-xl font-bold mb-2">Message Sent!</h4>
-                  <p className="text-[var(--text-secondary)]">Thanks for reaching out. I'll get back to you soon.</p>
+                  <h5 className="font-serif text-xl font-bold text-[var(--text-primary)]">Transmission Received</h5>
+                  <p className="text-xs text-[var(--text-secondary)] max-w-sm mx-auto font-light leading-relaxed">
+                    Thank you for reaching out. I will review your message and reply promptly.
+                  </p>
                 </motion.div>
               ) : (
-                <form className="p-6 space-y-5" action="https://formspree.io/f/mwpbjoad" method="POST" onSubmit={handleSubmit}>
+                <form
+                  className="space-y-6"
+                  action="https://formspree.io/f/mwpbjoad"
+                  method="POST"
+                  onSubmit={handleSubmit}
+                >
                   <div>
-                    <label className="block font-mono text-xs text-[var(--text-secondary)] mb-2">--subject</label>
+                    <label className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
+                      Subject Matter
+                    </label>
                     <select
                       name="subject"
                       value={formData.subject}
                       onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-                      className="w-full bg-[var(--bg-primary)] border border-[var(--border-subtle)] p-3 text-sm rounded-lg focus:border-[var(--accent-action)] focus:ring-1 focus:ring-[var(--accent-action)] outline-none text-[var(--text-primary)] transition-all duration-300"
+                      className="w-full bg-[#050406] border border-[var(--border-subtle)] focus:border-[var(--accent-ruby)] p-4 text-xs rounded-2xl outline-none text-[var(--text-primary)] font-mono transition-colors"
                     >
-                      <option value="Collaboration">Collaboration</option>
-                      <option value="Hiring">Hiring Opportunity</option>
-                      <option value="Query">General Query</option>
+                      <option value="SRE Collaboration">Site Reliability Engineering Collaboration</option>
+                      <option value="Career Opportunity">Career Opportunity / SRE Position</option>
+                      <option value="Cloud Consultation">Cloud Architecture & Deployment Consultation</option>
+                      <option value="General Conversation">General Conversation</option>
                     </select>
                   </div>
+
                   <div>
-                    <label className="block font-mono text-xs text-[var(--text-secondary)] mb-2">--message</label>
+                    <label className="block font-mono text-[11px] text-[var(--text-secondary)] mb-2 uppercase tracking-wider">
+                      Message Content
+                    </label>
                     <textarea
                       name="message"
                       rows="5"
+                      required
                       value={formData.message}
                       onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                      className="w-full bg-[var(--bg-primary)] border border-[var(--border-subtle)] p-3 text-sm rounded-lg focus:border-[var(--accent-action)] focus:ring-1 focus:ring-[var(--accent-action)] outline-none text-[var(--text-primary)] font-mono transition-all duration-300 resize-none"
-                      placeholder="Enter your message stream..."
+                      className="w-full bg-[#050406] border border-[var(--border-subtle)] focus:border-[var(--accent-ruby)] p-4 text-xs rounded-2xl outline-none text-[var(--text-primary)] font-mono transition-colors resize-none placeholder-[var(--text-muted)]"
+                      placeholder="Please convey the context of your inquiry or system specifications..."
                     />
                   </div>
+
                   <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
                     type="submit"
-                    className="w-full py-3 rounded-lg bg-gradient-to-r from-[var(--accent-action)] to-purple-500 text-white font-mono text-sm font-bold hover:shadow-lg hover:shadow-[var(--accent-action)]/20 transition-all duration-300"
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] text-white font-mono text-xs font-bold tracking-widest uppercase hover:shadow-wine-md transition-all duration-300 border border-white/10"
                   >
-                    $ push message --force
+                    Submit Transmission
                   </motion.button>
                 </form>
               )}
             </div>
-          </motion.div>
+          </div>
+
         </div>
       </div>
     </section>
   );
 };
 
-const SystemLogs = () => {
-  const [logs, setLogs] = React.useState([
-    { id: 1, timestamp: '10:00:01', msg: 'System initialized...' },
-    { id: 2, timestamp: '10:00:02', msg: 'Loading assets...' },
-    { id: 3, timestamp: '10:00:03', msg: 'Connected to edge network' },
-  ]);
+// --- Architectural Luxury Footer ---
 
-  React.useEffect(() => {
-    const messages = [
-      'GET /api/status 200 OK',
-      'Compiling modules...',
-      'Visitor session active',
-      'Updating cache...',
-      'Ping: 14ms',
-      'Fetching repo data...',
-      'Rendering components...',
-      'Garbage collection...',
-      'Syncing state...',
-      'Deploying to production...',
-      'Health check passed',
-      'SSL certificate valid',
-    ];
-
-    const interval = setInterval(() => {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('en-US', { hour12: false });
-      const newLog = {
-        id: Date.now(),
-        timestamp: timeString,
-        msg: messages[Math.floor(Math.random() * messages.length)]
-      };
-      setLogs(prev => [...prev.slice(-4), newLog]);
-    }, 2500);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <footer className="border-t border-[var(--border-subtle)] bg-[var(--bg-card)]/50 pt-16 pb-10 relative">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent-action)] to-purple-500 flex items-center justify-center shadow-lg">
-                <Terminal size={16} className="text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-[var(--text-primary)]">Semmozhiyan</div>
-                <div className="font-mono text-[10px] text-[var(--text-secondary)]">Senior Engineer</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-lg shadow-emerald-500/50" />
-              <span className="font-mono text-xs font-bold text-[var(--text-primary)]">SYSTEM OPERATIONAL</span>
-            </div>
-            <p className="font-mono text-xs text-[var(--text-secondary)] max-w-xs leading-relaxed">
-              All systems running normally. Monitoring active sessions and server performance.
-            </p>
-            <div className="flex gap-3 pt-2">
-              {[Github, Linkedin, Mail].map((Icon, i) => (
-                <motion.a
-                  key={i}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  href={[ 'https://github.com/semmozhiyan-dev', 'https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/', 'mailto:semmozhiyan40@gmail.com' ][i]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--accent-action)] hover:border-[var(--accent-action)] transition-all duration-300"
-                >
-                  <Icon size={16} />
-                </motion.a>
-              ))}
-            </div>
-            <p className="font-mono text-xs text-[var(--text-secondary)] pt-4">
-              &copy; {new Date().getFullYear()} Semmozhiyan. All rights reserved.
-            </p>
+const Footer = () => (
+  <footer className="border-t border-[var(--border-subtle)] bg-[#0A070D]/90 py-16 relative">
+    <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+      
+      <div className="space-y-2 text-center md:text-left">
+        <div className="flex items-center justify-center md:justify-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent-wine)] to-[var(--accent-ruby)] flex items-center justify-center text-white shadow-wine-sm">
+            <span className="font-serif font-black text-xs">S</span>
           </div>
-          <div className="md:col-span-2 relative">
-            <div className="p-5 bg-[var(--bg-primary)] border border-[var(--border-subtle)] rounded-xl font-mono text-xs h-44 overflow-hidden relative">
-              <div className="absolute top-3 right-4 flex items-center gap-2">
-                <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Live Logs</span>
-                <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-              <div className="flex flex-col justify-end h-full space-y-2">
-                {logs.map((log) => (
-                  <motion.div
-                    key={log.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex gap-3 text-[var(--text-secondary)]"
-                  >
-                    <span className="opacity-50 shrink-0">[{log.timestamp}]</span>
-                    <span className="text-[var(--text-primary)] truncate">&gt; {log.msg}</span>
-                  </motion.div>
-                ))}
-                <div className="flex gap-3 text-[var(--text-secondary)]">
-                  <span className="opacity-50 shrink-0">[{new Date().toLocaleTimeString('en-US', { hour12: false })}]</span>
-                  <motion.span
-                    animate={{ opacity: [1, 0] }}
-                    transition={{ repeat: Infinity, duration: 0.8 }}
-                    className="w-2 h-4 bg-[var(--accent-action)] block"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <span className="font-serif font-bold text-base tracking-wide text-[var(--text-primary)]">
+            The Tale Of Semmozhiyan
+          </span>
         </div>
+        <p className="font-mono text-xs text-[var(--text-muted)]">
+          Site Reliability Engineer · NexGenAds Technologies Pvt. Ltd.
+        </p>
       </div>
-    </footer>
-  );
-};
+
+      <div className="flex items-center gap-6 font-mono text-xs text-[var(--text-muted)]">
+        <Link to="/journey" className="hover:text-[var(--text-primary)] transition-colors">
+          The Journey
+        </Link>
+        <Link to="/lessons" className="hover:text-[var(--text-primary)] transition-colors">
+          Life Lessons
+        </Link>
+        <a href="https://github.com/semmozhiyan-dev" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-primary)] transition-colors">
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-primary)] transition-colors">
+          LinkedIn
+        </a>
+        <a href="mailto:semmozhiyan40@gmail.com" className="hover:text-[var(--text-primary)] transition-colors">
+          Email
+        </a>
+      </div>
+
+      <div className="font-mono text-[11px] text-[var(--text-muted)]">
+        &copy; {new Date().getFullYear()} Semmozhiyan. All rights reserved.
+      </div>
+
+    </div>
+  </footer>
+);
+
+// --- Command Palette (⌘K) ---
 
 const CommandPalette = ({ isOpen, onClose }) => {
   const [query, setQuery] = React.useState('');
@@ -1406,12 +1385,12 @@ const CommandPalette = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   const actions = [
-    { id: 'system', label: 'System Overview', href: '#system', icon: <Terminal size={14} />, desc: 'View profile and status' },
-    { id: 'logs', label: 'Changelog', href: '#logs', icon: <GitCommit size={14} />, desc: 'Career timeline and updates' },
-    { id: 'metrics', label: 'Proficiency Metrics', href: '#metrics', icon: <Activity size={14} />, desc: 'Skills and competency radar' },
-    { id: 'rfc', label: 'Architecture Reviews', href: '#rfc', icon: <Cpu size={14} />, desc: 'Project portfolio and RFCs' },
-
-    { id: 'connect', label: 'Open Ticket', href: '#connect', icon: <Mail size={14} />, desc: 'Get in touch' },
+    { id: 'about', label: 'About & Introduction', href: '/#about', desc: 'Building Reliable Software. Engineering for Scale.' },
+    { id: 'experience', label: 'Professional Experience', href: '/#experience', desc: 'NexGenAds Technologies · SRE Role & Projects' },
+    { id: 'projects', label: 'Personal Projects', href: '/#projects', desc: 'Foodela, Vendora & Orivex product suite' },
+    { id: 'journey', label: 'The Journey & Ambition', href: '/journey', desc: 'The road to building something of my own' },
+    { id: 'lessons', label: 'Lessons Life Taught Me', href: '/lessons', desc: 'Patience, failure, consistency, and 8 life lessons' },
+    { id: 'contact', label: 'Direct Transmission', href: '/#contact', desc: 'Connect with Semmozhiyan' },
   ];
 
   const filtered = actions.filter(a =>
@@ -1420,8 +1399,11 @@ const CommandPalette = ({ isOpen, onClose }) => {
   );
 
   const handleNavigate = (href) => {
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (href.startsWith('/#')) {
+      window.location.href = href;
+    } else {
+      window.location.href = href;
+    }
     onClose();
   };
 
@@ -1434,65 +1416,54 @@ const CommandPalette = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[70]"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.96, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-[20%] -translate-x-1/2 w-full max-w-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-2xl rounded-2xl overflow-hidden z-[70]"
+            exit={{ opacity: 0, scale: 0.96, y: 15 }}
+            transition={{ type: "spring", damping: 25, stiffness: 350 }}
+            className="fixed left-1/2 top-[22%] -translate-x-1/2 w-full max-w-lg bg-[#0E0B11] border border-[var(--border-wine)] shadow-2xl rounded-3xl overflow-hidden z-[80]"
           >
-            <div className="flex items-center px-5 py-4 border-b border-[var(--border-subtle)]">
-              <Search size={16} className="text-[var(--text-secondary)] mr-3 shrink-0" />
+            <div className="flex items-center px-6 py-4 border-b border-[var(--border-subtle)] bg-[#050406]">
+              <Search size={15} className="text-[var(--accent-ruby)] mr-3 shrink-0" />
               <input
                 autoFocus
                 type="text"
-                placeholder="Type a command or search..."
-                className="flex-1 bg-transparent outline-none text-[var(--text-primary)] placeholder-[var(--text-secondary)] font-mono text-sm"
+                placeholder="Search portfolio sections, projects, or journey..."
+                className="flex-1 bg-transparent outline-none text-[var(--text-primary)] placeholder-[var(--text-muted)] font-mono text-xs"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
               />
-              <div className="flex items-center gap-2 ml-3">
-                <span className="px-1.5 py-0.5 text-[10px] font-mono rounded border border-[var(--border-subtle)] bg-[var(--bg-primary)] text-[var(--text-secondary)]">ESC</span>
-                <button onClick={onClose} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1">
-                  <X size={16} />
-                </button>
-              </div>
+              <span className="px-2 py-0.5 text-[9px] font-mono rounded border border-[var(--border-subtle)] bg-[#0E0B11] text-[var(--text-muted)]">
+                ESC
+              </span>
             </div>
-            <div className="max-h-[320px] overflow-y-auto p-2">
+
+            <div className="max-h-[300px] overflow-y-auto p-3">
               {filtered.map(action => (
-                <motion.button
+                <button
                   key={action.id}
                   onClick={() => handleNavigate(action.href)}
-                  whileHover={{ x: 4 }}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all duration-200 group text-left"
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-[#050406] text-[var(--text-secondary)] hover:text-white transition-all text-left group"
                 >
-                  <div className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-subtle)] group-hover:border-[var(--accent-action)] transition-colors shrink-0">
-                    {action.icon}
+                  <div>
+                    <div className="font-serif text-sm font-bold group-hover:text-white">{action.label}</div>
+                    <div className="text-[10px] text-[var(--text-muted)] font-mono">{action.desc}</div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-mono text-sm font-medium">{action.label}</div>
-                    <div className="text-[10px] text-[var(--text-secondary)] truncate">{action.desc}</div>
-                  </div>
-                  <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                </motion.button>
+                  <ArrowUpRight size={13} className="opacity-0 group-hover:opacity-100 text-[var(--accent-ruby)] transition-opacity" />
+                </button>
               ))}
               {filtered.length === 0 && (
-                <div className="px-4 py-12 text-center text-[var(--text-secondary)] font-mono text-xs">
-                  No results found for "<span className="text-[var(--text-primary)]">{query}</span>"
+                <div className="px-4 py-8 text-center text-[var(--text-muted)] font-mono text-xs">
+                  No matching section found for "{query}"
                 </div>
               )}
             </div>
-            <div className="px-5 py-3 bg-[var(--bg-primary)] border-t border-[var(--border-subtle)] flex items-center justify-between">
-              <span className="font-mono text-[10px] text-[var(--text-secondary)]">
-                <kbd className="px-1.5 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-card)] mr-1 font-bold">⌘K</kbd>
-                to open
-              </span>
-              <span className="font-mono text-[10px] text-[var(--text-secondary)]">
-                <kbd className="px-1.5 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-card)] mr-1 font-bold">↑↓</kbd>
-                to navigate
-              </span>
+
+            <div className="px-6 py-3 bg-[#050406] border-t border-[var(--border-subtle)] flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
+              <span>Navigation</span>
+              <span>Press ESC to dismiss</span>
             </div>
           </motion.div>
         </>
@@ -1501,50 +1472,64 @@ const CommandPalette = ({ isOpen, onClose }) => {
   );
 };
 
+// --- Resume Modal ---
+
 const ResumeModal = ({ isOpen, onClose }) => (
   <AnimatePresence>
     {isOpen && (
       <>
         <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80]"
+          className="fixed inset-0 bg-black/85 backdrop-blur-md z-[80]"
         />
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="fixed inset-4 md:inset-10 bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-2xl rounded-2xl overflow-hidden z-[90] flex flex-col"
+          exit={{ opacity: 0, scale: 0.96 }}
+          transition={{ type: "spring", damping: 25, stiffness: 350 }}
+          className="fixed inset-4 md:inset-10 bg-[#0E0B11] border border-[var(--border-wine)] shadow-2xl rounded-3xl overflow-hidden z-[90] flex flex-col"
         >
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-primary)]">
-            <h3 className="font-mono text-sm font-bold flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-action)] to-purple-500 flex items-center justify-center">
-                <FileText size={14} className="text-white" />
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-[#050406]">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[var(--accent-wine)]/30 border border-[var(--border-wine)] text-[var(--accent-ruby)] flex items-center justify-center">
+                <FileText size={15} />
               </div>
-              SEMMOZHIYAN_RESUME%20(4).pdf
-            </h3>
+              <div>
+                <h3 className="font-serif text-sm font-bold text-[var(--text-primary)]">
+                  SEMMOZHIYAN_RESUME.pdf
+                </h3>
+                <span className="font-mono text-[10px] text-[var(--text-muted)]">Site Reliability Engineer · NexGenAds Technologies</span>
+              </div>
+            </div>
+
             <div className="flex items-center gap-2">
-              <motion.a
-                whileHover={{ scale: 1.05 }}
+              <a
                 href="/SEMMOZHIYAN_RESUME%20(4).pdf"
                 download
-                className="p-2.5 hover:bg-[var(--bg-card)] rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-action)] hover:border-[var(--accent-action)] border border-transparent"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--accent-wine)]/30 border border-[var(--border-wine)] text-[var(--accent-vibrant)] hover:text-white font-mono text-xs font-semibold transition-colors"
                 title="Download PDF"
               >
-                <Download size={18} />
-              </motion.a>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
+                <Download size={13} />
+                <span>Download</span>
+              </a>
+              <button
                 onClick={onClose}
-                className="p-2.5 hover:bg-[var(--bg-card)] rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-transparent hover:border-[var(--border-subtle)]"
+                className="p-2 hover:bg-white/5 rounded-xl text-[var(--text-secondary)] hover:text-white transition-colors"
               >
-                <X size={18} />
-              </motion.button>
+                <X size={16} />
+              </button>
             </div>
           </div>
-          <div className="flex-1 bg-gray-100 dark:bg-gray-900 relative">
-            <iframe src="/SEMMOZHIYAN_RESUME%20(4).pdf" className="w-full h-full" title="Resume PDF" />
+
+          <div className="flex-1 bg-[#050406] relative">
+            <iframe
+              src="/SEMMOZHIYAN_RESUME%20(4).pdf"
+              className="w-full h-full"
+              title="Semmozhiyan Resume"
+            />
           </div>
         </motion.div>
       </>
@@ -1552,42 +1537,81 @@ const ResumeModal = ({ isOpen, onClose }) => (
   </AnimatePresence>
 );
 
-const FloatingResumeBtn = () => {
+// --- Floating Action Controls ---
+
+const FloatingActions = ({ onOpenCmd, onOpenResume }) => {
   const { scrollY } = useScroll();
   const [visible, setVisible] = React.useState(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setVisible(latest > 300);
+    setVisible(latest > 250);
   });
 
   return (
     <AnimatePresence>
       {visible && (
-        <motion.a
-          href="/SEMMOZHIYAN_RESUME%20(4).pdf"
-          download
-          initial={{ opacity: 0, y: 20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.9 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="fixed bottom-8 right-28 z-50 flex items-center gap-2.5 px-5 py-3 bg-gradient-to-r from-[var(--accent-action)] to-purple-500 text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 border border-white/10 font-mono text-xs font-bold"
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 15 }}
+          className="fixed bottom-8 right-8 z-50 flex items-center gap-3"
         >
-          <Download size={16} />
-          <span>RESUME</span>
-          <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 hover:opacity-100 transition-opacity animate-shimmer" />
-        </motion.a>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onOpenResume}
+            className="flex items-center gap-2 px-5 py-3 bg-[#0E0B11]/90 backdrop-blur-xl border border-[var(--border-wine)] text-[var(--text-primary)] rounded-full shadow-wine-md hover:shadow-wine-lg transition-all font-mono text-xs font-bold"
+          >
+            <Download size={14} className="text-[var(--accent-ruby)]" />
+            <span>RESUME</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onOpenCmd}
+            className="p-3.5 bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] text-white rounded-full shadow-wine-md hover:shadow-wine-lg transition-all border border-white/10"
+            title="Command Palette (⌘K)"
+          >
+            <Command size={18} />
+          </motion.button>
+        </motion.div>
       )}
     </AnimatePresence>
   );
 };
 
+// --- Home Page Component ---
+
+const HomePage = ({ onOpenResume }) => {
+  const activeSection = useActiveSection(['about', 'experience', 'projects', 'journey', 'lessons', 'contact']);
+
+  return (
+    <>
+      <Navigation
+        activeSection={activeSection}
+        onOpenResume={onOpenResume}
+      />
+
+      <main>
+        <Hero onOpenResume={onOpenResume} />
+        <ProfessionalExperience />
+        <PersonalProjects />
+        <JourneyPreview />
+        <LessonsPreview />
+        <Contact />
+      </main>
+
+      <Footer />
+    </>
+  );
+};
+
+// --- App Root with Routes ---
+
 const App = () => {
   const [isCmdOpen, setIsCmdOpen] = React.useState(false);
   const [isResumeOpen, setIsResumeOpen] = React.useState(false);
-  const { theme, toggle: toggleTheme } = useTheme();
-  const activeSection = useActiveSection(['system', 'logs', 'metrics', 'rfc', 'connect']);
-  const { x: mouseX, y: mouseY } = useMousePosition();
 
   React.useEffect(() => {
     const handleKeyDown = (e) => {
@@ -1604,37 +1628,25 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-action)] selection:text-white relative overflow-x-hidden transition-colors duration-300">
-      <ScrollProgress />
+    <div className="min-h-screen bg-[#050406] text-[var(--text-primary)] selection:bg-[var(--accent-wine)] selection:text-white relative overflow-x-hidden">
+      <AtmosphericBackground />
 
-      <NetworkBackground />
-
-      {/* --- Content Layer --- */}
       <div className="relative z-10">
-        <Navigation theme={theme} toggleTheme={toggleTheme} activeSection={activeSection} />
-        <main>
-          <Hero />
-          <TechMarquee />
-          <Changelog />
-          <Skills />
-          <SkillsRadar />
-          <Projects />
-          <Contact />
-        </main>
-        <SystemLogs />
+        <Routes>
+          <Route path="/" element={<HomePage onOpenResume={() => setIsResumeOpen(true)} />} />
+          <Route path="/journey" element={<JourneyPage onOpenResume={() => setIsResumeOpen(true)} />} />
+          <Route path="/lessons" element={<LessonsPage onOpenResume={() => setIsResumeOpen(true)} />} />
+        </Routes>
 
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setIsCmdOpen(true)}
-          className="fixed bottom-8 right-8 z-50 p-4 bg-gradient-to-br from-[var(--accent-action)] to-purple-500 text-white rounded-full shadow-xl hover:shadow-2xl hover:shadow-[var(--accent-action)]/30 transition-all duration-300 border border-white/10"
-          title="Command Palette (⌘K)"
-        >
-          <Command size={22} />
-        </motion.button>
+        <FloatingActions
+          onOpenCmd={() => setIsCmdOpen(true)}
+          onOpenResume={() => setIsResumeOpen(true)}
+        />
 
-        <FloatingResumeBtn />
-        <ResumeModal isOpen={isResumeOpen} onClose={() => setIsResumeOpen(false)} />
+        <ResumeModal
+          isOpen={isResumeOpen}
+          onClose={() => setIsResumeOpen(false)}
+        />
 
         <CommandPalette
           isOpen={isCmdOpen}
