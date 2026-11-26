@@ -1,5 +1,5 @@
 # Robots.txt for https://portfolio.vendore.tech
-# The Tale Of Semmozhiyan | Site Reliability Engineer & Software Developer
+# Semmozhiyan NS | Site Reliability Engineer & Founder & CEO of EKSISAI
 
 User-agent: *
 Allow: /

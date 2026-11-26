@@ -1,6 +1,6 @@
-# 🚀 Personal Portfolio Website
+# Semmozhiyan NS — Portfolio
 
-A modern, responsive portfolio website showcasing my development skills and projects.
+Portfolio of Semmozhiyan NS — Site Reliability Engineer and Founder & CEO of EKSISAI, based in Coimbatore, Tamil Nadu, India.
 
 ## ✨ Features
 
@@ -20,7 +20,7 @@ A modern, responsive portfolio website showcasing my development skills and proj
 
 ## 🌐 Live Demo
 
-Visit the live website: [Your Portfolio URL will be here]
+Visit the live website: [https://portfolio.vendore.tech](https://portfolio.vendore.tech)
 
 ## 📁 Project Structure
 
@@ -40,13 +40,13 @@ portfolio/
 
 ## 🚀 Deployment
 
-This portfolio is deployed using GitHub Pages for free hosting.
+This portfolio is deployed on Vercel at https://portfolio.vendore.tech.
 
 ## 👨‍💻 Contact
 
 - **Email**: semmozhiyan40@gmail.com
-- **LinkedIn**: [Semmozhiyan N S](https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/)
-- **GitHub**: [semmozhi-ctrl](https://github.com/semmozhi-ctrl)
+- **LinkedIn**: [Semmozhiyan NS](https://www.linkedin.com/in/semmozhiyan/)
+- **GitHub**: [semmozhiyan-dev](https://github.com/semmozhiyan-dev)
 
 ---
 

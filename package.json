@@ -1,20 +1,22 @@
 {
   "name": "portfolio",
   "version": "1.0.0",
-  "description": "Senior Full Stack Engineer Portfolio",
+  "description": "Portfolio of Semmozhiyan NS — Site Reliability Engineer and Founder & CEO of EKSISAI",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node prerender.js",
+    "prerender": "node prerender.js",
     "preview": "vite preview"
   },
   "keywords": [
     "portfolio",
-    "website",
-    "personal",
-    "developer"
+    "site-reliability-engineer",
+    "sre",
+    "founder",
+    "eksisai"
   ],
-  "author": "Semmozhiyan",
+  "author": "Semmozhiyan NS",
   "license": "MIT",
   "devDependencies": {
     "@types/react": "^18.2.43",

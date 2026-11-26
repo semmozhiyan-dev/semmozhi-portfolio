@@ -34,7 +34,7 @@ const Hero = () => {
                 <motion.img 
                   whileHover={{ scale: 1.05 }}
                   src={profileImg}
-                  alt="Profile" 
+                  alt="Semmozhiyan NS — Site Reliability Engineer and Founder & CEO of EKSISAI" 
                   className="w-24 h-24 rounded-full border border-[var(--border-subtle)] shadow-sm"
                 />
                 <div className="absolute bottom-1 right-1 w-5 h-5 bg-[var(--bg-card)] rounded-full flex items-center justify-center border border-[var(--border-subtle)] z-10">
@@ -49,9 +49,9 @@ const Hero = () => {
                 </div>
               </div>
               <h1 className="text-5xl font-bold tracking-tight text-[var(--text-primary)] mb-2">
-                SEMMOZHIYAN
+                SEMMOZHIYAN NS
               </h1>
-              <p className="font-mono text-[var(--text-secondary)]">JAVA_DEVELOPER :: DEVOPS_ENGINEER</p>
+              <p className="font-mono text-[var(--text-secondary)]">SITE_RELIABILITY_ENGINEER :: FOUNDER_AND_CEO_EKSISAI</p>
             </motion.div>
 
             <motion.div 
@@ -66,13 +66,13 @@ const Hero = () => {
               </div>
               <p className="leading-relaxed text-[var(--text-primary)]">
                 <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-                  <span className="text-[var(--accent-action)]">&gt;</span> Aspiring DevOps Engineer & Java Developer.<br/>
+                  <span className="text-[var(--accent-action)]">&gt;</span> Semmozhiyan NS — Site Reliability Engineer and Founder &amp; CEO of EKSISAI.<br/>
                 </motion.span>
                 <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}>
-                  <span className="text-[var(--accent-action)]">&gt;</span> Stack: Java, Python, AWS, Jenkins, Kubernetes, Linux, Docker.<br/>
+                  <span className="text-[var(--accent-action)]">&gt;</span> Based in Coimbatore, Tamil Nadu, India. Works on software systems, infrastructure, automation and digital products.<br/>
                 </motion.span>
                 <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.9 }}>
-                  <span className="text-[var(--accent-action)]">&gt;</span> Focused on automation and scalable infrastructure.
+                  <span className="text-[var(--accent-action)]">&gt;</span> Focused on reliable systems and practical product engineering.
                   <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} className="inline-block w-2 h-4 bg-[var(--accent-action)] ml-1 align-middle" />
                 </motion.span>
               </p>
@@ -84,11 +84,11 @@ const Hero = () => {
               transition={{ delay: 2.5 }}
               className="flex flex-wrap gap-4"
             >
-              <a href="https://github.com/Semmozhidouble" className="flex items-center gap-2 px-4 py-2 border border-[var(--border-subtle)] text-[var(--text-primary)] rounded text-sm font-medium hover:bg-[var(--border-subtle)] transition-colors">
+              <a href="https://github.com/semmozhiyan-dev" className="flex items-center gap-2 px-4 py-2 border border-[var(--border-subtle)] text-[var(--text-primary)] rounded text-sm font-medium hover:bg-[var(--border-subtle)] transition-colors">
                 <Github size={16} />
                 GitHub
               </a>
-              <a href="https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/" className="flex items-center gap-2 px-4 py-2 border border-[var(--border-subtle)] text-[var(--text-primary)] rounded text-sm font-medium hover:bg-[var(--border-subtle)] transition-colors">
+              <a href="https://www.linkedin.com/in/semmozhiyan/" className="flex items-center gap-2 px-4 py-2 border border-[var(--border-subtle)] text-[var(--text-primary)] rounded text-sm font-medium hover:bg-[var(--border-subtle)] transition-colors">
                 <Linkedin size={16} />
                 LinkedIn
               </a>
@@ -114,11 +114,11 @@ const Hero = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Region</span>
-                  <span className="font-mono text-xs">US-EAST-1</span>
+                  <span className="font-mono text-xs">India · IST</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Uptime</span>
-                  <span className="font-mono text-xs">5 YEARS</span>
+                  <span className="text-sm">Focus</span>
+                  <span className="font-mono text-xs">Reliability · Automation</span>
                 </div>
               </div>
             </motion.div>

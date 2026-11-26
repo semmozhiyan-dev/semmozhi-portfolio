@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import {
   ArrowLeft,
   ArrowRight,
@@ -38,7 +38,6 @@ const LessonsPage = ({ onOpenResume }) => {
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = "Lessons Life Taught Me | The Tale Of Semmozhiyan";
   }, []);
 
   const handleCopy = () => {
@@ -123,7 +122,7 @@ const LessonsPage = ({ onOpenResume }) => {
       alt: 'Clean minimalist architectural composition with sharp contrast',
       believed: 'I used to think about money mainly in terms of how much I could earn and what I could afford.',
       learned: 'Money can create security, provide choices, support people I care about, and help turn a business idea into reality. But earning more without managing it well doesn\'t automatically create freedom.',
-      believeNow: 'I want to understand how to earn, save, spend, and invest responsibly. My long-term ambition to build a startup requires more than technical ability. It also requires financial discipline, an understanding of customers, and the ability to make sustainable decisions.',
+      believeNow: 'I want to understand how to earn, save, spend, and invest responsibly. Building EKSISAI requires more than technical ability. It also requires financial discipline, an understanding of customers, and the ability to make sustainable decisions.',
       quote: 'I want money to expand my choices, not become the only measure of my worth.'
     },
     {
@@ -165,7 +164,7 @@ const LessonsPage = ({ onOpenResume }) => {
 
             <Link to="/" className="flex items-center gap-2 group">
               <span className="font-serif font-bold text-base sm:text-lg tracking-wide text-[var(--text-primary)] group-hover:gradient-text transition-all">
-                The Tale Of Semmozhiyan
+                Semmozhiyan NS
               </span>
             </Link>
 
@@ -441,7 +440,7 @@ const LessonsPage = ({ onOpenResume }) => {
         <footer className="border-t border-[var(--border-subtle)] bg-[#0A070D]/90 py-12">
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-[var(--text-muted)]">
             <div>
-              &copy; {new Date().getFullYear()} The Tale Of Semmozhiyan · Lessons Life Taught Me
+              &copy; {new Date().getFullYear()} Semmozhiyan NS · Lessons Life Taught Me
             </div>
             <div className="flex items-center gap-6">
               <Link to="/" className="hover:text-white transition-colors">
@@ -453,7 +452,7 @@ const LessonsPage = ({ onOpenResume }) => {
               <a href="https://github.com/semmozhiyan-dev" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 GitHub
               </a>
-              <a href="https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              <a href="https://www.linkedin.com/in/semmozhiyan/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 LinkedIn
               </a>
             </div>

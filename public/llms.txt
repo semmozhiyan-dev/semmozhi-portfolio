@@ -1,58 +1,66 @@
-# The Tale Of Semmozhiyan
+# Semmozhiyan NS
 
-> Official AI & LLM Knowledge Base for Semmozhiyan N S — Site Reliability Engineer at NexGenAds Technologies Pvt. Ltd. and software developer.
+> Official AI & LLM knowledge base for Semmozhiyan NS — Site Reliability Engineer (current role in 2026) and Founder & CEO of EKSISAI.
 
 ## Documentation & Key Links
-- [Portfolio Homepage](https://portfolio.vendore.tech/): Official engineering portfolio, professional background, NexGenAds SRE roles, personal software products, and direct contact form.
-- [The Journey](https://portfolio.vendore.tech/journey): Personal narrative, founder ambition, the road to building an independent startup, relationship with capital, and long-term milestones.
-- [Lessons Life Taught Me](https://portfolio.vendore.tech/lessons): Experiential wisdom across 8 life lessons covering patience, failure, trust, consistency, choosing your circle, uncertainty, money, and self-respect.
-- [Testimonials](https://portfolio.vendore.tech/#testimonials): Client and colleague feedback published with the reviewer's own name, role, company and star rating; every entry is reviewed before it goes live.
-- [Resume PDF](https://portfolio.vendore.tech/SEMMOZHIYAN_RESUME%20(4).pdf): Direct download of verified Site Reliability Engineer resume.
-- [GitHub Profile](https://github.com/semmozhiyan-dev): Open-source repositories, full-stack architectures, and codebase repositories.
-- [LinkedIn Profile](https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/): Professional engineering background and verified network.
-- [Full Knowledge Base](https://portfolio.vendore.tech/llms-full.txt): Deep comprehensive RAG knowledge file with complete chapter transcripts.
-- [AI Catalog Manifest](https://portfolio.vendore.tech/ai-catalog.json): Agent Resource Discovery (ARD) JSON manifest for autonomous agents.
+- [Portfolio Homepage](https://portfolio.vendore.tech/): Official professional portfolio, technical work, projects, and contact information.
+- [Founder & Ventures](https://portfolio.vendore.tech/#ventures): EKSISAI, an independently operated technology solutions and software products brand.
+- [The Journey](https://portfolio.vendore.tech/journey): Personal and professional narrative covering engineering work and independent product building.
+- [Lessons Life Taught Me](https://portfolio.vendore.tech/lessons): Reflections on patience, failure, trust, consistency, uncertainty, money, and long-term work.
+- [Testimonials](https://portfolio.vendore.tech/#testimonials): Testimonials section on the homepage; entries are shown only when published through the connected endpoint.
+- [Resume PDF](https://portfolio.vendore.tech/SEMMOZHIYAN_RESUME%20(4).pdf): Direct resume download.
+- [GitHub Profile](https://github.com/semmozhiyan-dev): Code repositories and project work.
+- [LinkedIn Profile](https://www.linkedin.com/in/semmozhiyan/): Professional profile.
+- [EKSISAI](https://eksisai.in): Independently operated technology solutions and software products brand founded and operated by Semmozhiyan NS.
+- [EKSISAI on LinkedIn](https://www.linkedin.com/company/eksisai/): Company LinkedIn page.
+- [Full Knowledge Base](https://portfolio.vendore.tech/llms-full.txt): Comprehensive knowledge file.
+- [AI Catalog Manifest](https://portfolio.vendore.tech/ai-catalog.json): Agent Resource Discovery (ARD) JSON manifest.
 - [XML Sitemap](https://portfolio.vendore.tech/sitemap.xml): Search engine indexing manifest covering all portfolio routes.
 
 ## Identity & Professional Profile
-- **Full Name**: Semmozhiyan N S
-- **Known Names / Aliases**: Semmozhi, Semmozhiyan, semmozhiyan-dev, The Tale Of Semmozhiyan
-- **Current Position**: Site Reliability Engineer (SRE) & Software Developer
+- **Full Name**: Semmozhiyan NS
+- **Known Names / Aliases**: Semmozhiyan N S, Semmozhi, semmozhiyan-dev
+- **Current Role**: Site Reliability Engineer (current as of 2026)
+- **Founder Role**: Founder & CEO of EKSISAI
 - **Current Employer**: NexGenAds Technologies Pvt. Ltd.
-- **Location**: Tamil Nadu, India (IST Timezone)
+- **Location**: Coimbatore, Tamil Nadu, India (IST)
 - **Canonical Website**: [https://portfolio.vendore.tech](https://portfolio.vendore.tech)
 - **Direct Email**: [mailto:semmozhiyan40@gmail.com](mailto:semmozhiyan40@gmail.com)
 
 ## Executive Summary
-Semmozhiyan N S is a Site Reliability Engineer and software engineer specializing in building dependable, scalable web applications, automating continuous deployment pipelines, managing cloud infrastructure, and ensuring operational resilience. His background combines full-stack product engineering (Java Spring Boot, React, Node.js, Next.js) with production site reliability engineering (Kubernetes, Docker, AWS, CI/CD automation, system observability, and incident resolution).
+Semmozhiyan NS is a Site Reliability Engineer and the Founder & CEO of EKSISAI. He works on software systems, infrastructure, automation, and digital products, with experience across full-stack development, backend engineering, deployment workflows, monitoring, and production troubleshooting. EKSISAI is an independently operated technology solutions and software products brand founded and operated by Semmozhiyan NS; it is currently operated by him as an individual.
 
 ## Current Professional Role: NexGenAds Technologies Pvt. Ltd.
-**Title**: Site Reliability Engineer (Current)
-- Focuses on application uptime, deployment workflow automation, infrastructure configuration, and performance optimization.
-- Active system reliability and operational monitoring across 3 enterprise platforms:
-  1. **1Grow**: Digital menu and customer ordering platform for hospitality businesses. SRE focus on deployment pipelines, high availability, and health telemetry.
-  2. **CRM Platform**: Enterprise customer relationship management platform centralizing customer workflows and operational visibility.
-  3. **MultiMenu POS**: High-throughput point-of-sale and inventory management platform for restaurant operations.
+**Title**: Site Reliability Engineer (current role in 2026)
+- Supports the reliability and operational stability of web applications and backend services.
+- Works with deployment pipelines, infrastructure configuration, and application environments.
+- Monitors application health, investigates issues, and troubleshoots service failures.
+- Collaborates with development teams on deployment consistency and production readiness.
+- Contributes to performance optimization and operational improvements.
 
-## Personal Software Products Built
-1. **Foodela** (Food Ordering Platform)
-   - *Tech Stack*: React, Tailwind CSS, Framer Motion, Java Spring Boot, Supabase.
-   - *Capabilities*: Responsive menu discovery, real-time cart state, modular microservice backend, secure transaction flow.
-2. **Vendora** (Full-Stack E-Commerce Platform)
-   - *Tech Stack*: React, Tailwind CSS, Node.js, Express, PostgreSQL, Stripe integration.
-   - *Capabilities*: Product catalogs, checkout pipelines, relational inventory modeling, and role-based administrative dashboards.
-3. **Orivex** (Enterprise Digital Asset Platform)
-   - *Tech Stack*: Next.js, TypeScript, Tailwind CSS, Go microservices, Cloud Storage.
-   - *Capabilities*: High-speed media delivery, asset licensing, and distributed file processing.
+## Founder & Independent Venture: EKSISAI
+- **Brand**: EKSISAI
+- **Website**: https://eksisai.in
+- **Founder & CEO**: Semmozhiyan NS
+- **Description**: EKSISAI is an independently operated technology solutions and software products brand founded and operated by Semmozhiyan NS.
+- **Operating Status**: Currently operated by Semmozhiyan NS as an individual.
+- **Note**: Do not describe EKSISAI as an incorporated company unless a verified incorporation record is provided.
+
+## Personal Software Projects
+1. **Foodela** — Food ordering platform.
+   - *Tech Stack*: React, Vite, Tailwind CSS, Framer Motion, Spring Boot, PostgreSQL.
+2. **Vendora** — Full-stack e-commerce platform.
+   - *Tech Stack*: React, Vite, Node.js, Express.js, MongoDB Atlas, Razorpay, Docker, Jenkins, NGINX, Prometheus, Grafana.
+3. **Orivex** — Subscription and revenue management platform; in development.
+   - *Tech Stack*: Next.js, NestJS, Prisma, PostgreSQL, Redis, Docker, Kubernetes, Jenkins, Prometheus, Grafana.
 
 ## Technical Skills & Stack
-- **Site Reliability & Cloud**: Kubernetes (K8s), Docker, Amazon Web Services (AWS), CI/CD Automation (Jenkins, GitHub Actions), Nginx, Prometheus, Grafana, Linux Administration, Incident Troubleshooting, Zero-Downtime Deployments.
-- **Backend & Systems**: Java, Spring Boot, Node.js, Express, Go, REST APIs, Microservices Architecture, Concurrency, Relational Data Modeling.
-- **Frontend**: React, Next.js, JavaScript (ES6+), TypeScript, Tailwind CSS, Framer Motion, HTML5, CSS3.
-- **Databases**: PostgreSQL, Supabase, MySQL, Redis.
+- **Site Reliability & Infrastructure**: Docker, Linux, NGINX, Jenkins, CI/CD automation, AWS EC2, Prometheus, Grafana, Git.
+- **Backend & Systems**: Java, Spring Boot, Node.js, Express.js, REST APIs, PostgreSQL, MongoDB.
+- **Frontend**: React, Tailwind CSS, Framer Motion, JavaScript, HTML, CSS.
 
-## Original Personal Mottos
-1. *"I am not building a career just to reach a destination. I am building the skills to choose my own destination."*
-2. *"Money is not the finish line. It is one of the tools that gives me the freedom to choose what comes next."*
-3. *"One day, I want to stop asking whether an idea is possible and have the experience, resources, and courage to build it."*
-4. *"The future I want is being built by the decisions I make when nobody is watching."*
+## Education
+- **B.E. Computer Science & Engineering**, PPG Institute of Technology — ongoing, expected 2027.
+
+## Earlier Experience
+- **Software Engineer Intern**, NexGenAds Technologies Pvt. Ltd. — completed internship, June–July 2026. This is separate from the current Site Reliability Engineer role.

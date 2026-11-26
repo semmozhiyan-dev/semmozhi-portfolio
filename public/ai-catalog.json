@@ -8,28 +8,30 @@
     {
       "@context": "https://agenticresourcediscovery.org/context/v1",
       "identifier": "urn:air:portfolio.vendore.tech:tools:contact-semmozhiyan",
-      "displayName": "Contact Semmozhiyan SRE",
+      "displayName": "Contact Semmozhiyan NS — SRE & EKSISAI",
       "type": "application/mcp-server-card+json",
-      "description": "Direct communication endpoint for Site Reliability Engineering collaboration, recruitment, and cloud consultations.",
+      "description": "Direct communication endpoint for Site Reliability Engineering, EKSISAI, and software development inquiries.",
       "url": "https://portfolio.vendore.tech/.well-known/mcp-server-card.json",
-      "tags": ["sre", "site-reliability-engineering", "devops", "cloud", "contact"],
+      "tags": ["sre", "site-reliability-engineering", "founder", "eksisai", "contact"],
       "representativeQueries": [
-        "Contact Semmozhiyan N S",
+        "Contact Semmozhiyan NS",
         "Hire Site Reliability Engineer Semmozhiyan",
+        "Ask Semmozhiyan about EKSISAI",
         "Send an engineering collaboration inquiry to Semmozhiyan"
       ]
     },
     {
       "@context": "https://agenticresourcediscovery.org/context/v1",
       "identifier": "urn:air:portfolio.vendore.tech:docs:llms-knowledge",
-      "displayName": "Semmozhiyan Knowledge Base",
+      "displayName": "Semmozhiyan NS Knowledge Base",
       "type": "text/markdown",
-      "description": "Structured biographical, engineering, and product portfolio knowledge base for LLMs.",
+      "description": "Structured biographical, engineering, founder, and product portfolio knowledge base for LLMs.",
       "url": "https://portfolio.vendore.tech/llms.txt",
-      "tags": ["knowledge-base", "portfolio", "sre", "biography"],
+      "tags": ["knowledge-base", "portfolio", "sre", "eksisai", "biography"],
       "representativeQueries": [
-        "Who is Semmozhiyan N S",
+        "Who is Semmozhiyan NS",
         "What are Semmozhiyan's skills and projects",
+        "Is Semmozhiyan the founder of EKSISAI",
         "Tell me about Semmozhiyan's work at NexGenAds Technologies"
       ]
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -35,7 +35,6 @@ const ScrollProgress = () => {
 const JourneyPage = ({ onOpenResume }) => {
   React.useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = "The Journey & Founder Ambition | The Tale Of Semmozhiyan";
   }, []);
 
   const chapters = [
@@ -88,25 +87,25 @@ const JourneyPage = ({ onOpenResume }) => {
             Through my work around projects such as <strong className="text-[var(--text-primary)] font-semibold">1Grow</strong>, <strong className="text-[var(--text-primary)] font-semibold">CRM</strong>, and <strong className="text-[var(--text-primary)] font-semibold">MultiMenu POS</strong>, I'm developing my understanding of the systems that support real applications and business operations.
           </p>
           <p>
-            Reliability, deployment, monitoring, troubleshooting, and operational discipline are not just technical concepts. They shape how I think about building products that people can depend on. This experience is an important step toward a bigger ambition: understanding both the technology and the business behind a successful product.
+            Reliability, deployment, monitoring, troubleshooting, and operational discipline are not just technical concepts. They shape how I think about building products that people can depend on. This experience informs both my current Site Reliability Engineering work and the independent product work I do through EKSISAI.
           </p>
         </>
       )
     },
     {
       num: '04',
-      title: 'The Long-Term Vision',
-      tagline: 'Learn first. Build experience. Create something of my own.',
+      title: 'Building Independently',
+      tagline: 'Learn first. Build reliably. Grow a venture responsibly.',
       content: (
         <>
           <p>
-            My long-term ambition is to build a technology startup of my own.
+            Alongside my engineering role, I founded EKSISAI, an independently operated technology solutions and software products brand.
           </p>
           <p>
-            I don't want to rush into entrepreneurship without understanding what it takes to build a sustainable business. My plan is to gain experience in the industry, strengthen my technical skills, learn from real business problems, and build financial stability before taking that step.
+            EKSISAI is currently operated by me as an individual. I am treating it as a long-term product and service practice, not as a claim about incorporation, team size, or funding.
           </p>
           <p>
-            Over the long term, I want to turn what I learn into a business that creates genuine value. I want to understand customers, build products people need, develop a strong team, and create something that can grow beyond my individual effort. The goal is not just to start a company. It's to build a company worth sustaining.
+            My focus is to keep learning from real business problems, build products people need, and grow the venture sustainably while continuing to work as a Site Reliability Engineer.
           </p>
         </>
       )
@@ -259,7 +258,7 @@ const JourneyPage = ({ onOpenResume }) => {
 
             <Link to="/" className="flex items-center gap-2 group">
               <span className="font-serif font-bold text-base sm:text-lg tracking-wide text-[var(--text-primary)] group-hover:gradient-text transition-all">
-                The Tale Of Semmozhiyan
+                Semmozhiyan NS
               </span>
             </Link>
 
@@ -518,13 +517,13 @@ const JourneyPage = ({ onOpenResume }) => {
                   I'm still learning. I'm still building. I'm still figuring things out.
                 </p>
                 <p>
-                  I don't have every answer, and I don't need to pretend that I do. What I have is a direction, a willingness to learn, and a long-term ambition to create something meaningful.
+                  I don't have every answer, and I don't need to pretend that I do. What I have is a direction, a willingness to learn, and a long-term commitment to building useful products through EKSISAI.
                 </p>
                 <p>
                   Every skill I develop, every system I understand, every problem I solve, and every responsible financial decision brings me closer to the future I'm working toward.
                 </p>
                 <p className="text-[var(--text-primary)] font-medium font-serif italic text-lg pt-2">
-                  The goal is to become capable of building something of my own, and to build it well.
+                  The goal is to keep building reliable systems and an independent venture well.
                 </p>
                 <p className="font-serif text-xl font-bold text-[var(--accent-vibrant)]">
                   The journey continues.
@@ -557,7 +556,7 @@ const JourneyPage = ({ onOpenResume }) => {
               <a href="https://github.com/semmozhiyan-dev" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 GitHub
               </a>
-              <a href="https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              <a href="https://www.linkedin.com/in/semmozhiyan/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 LinkedIn
               </a>
             </div>

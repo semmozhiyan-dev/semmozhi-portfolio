@@ -1,44 +1,64 @@
-# The Tale Of Semmozhiyan — Comprehensive Knowledge Base (Semmozhiyan N S)
+# Semmozhiyan NS — Comprehensive Knowledge Base
 
-> Complete biographical and engineering knowledge base for Semmozhiyan N S.
+> Complete biographical, engineering, and founder knowledge base for Semmozhiyan NS.
 > Canonical URL: https://portfolio.vendore.tech
 
 ## Full Identity
-- **Name**: Semmozhiyan N S
-- **Known Names / Aliases**: Semmozhi, Semmozhiyan, Semmozhiyan N S, semmozhiyan-dev, The Tale Of Semmozhiyan
-- **Title**: Site Reliability Engineer & Software Developer
-- **Organization**: NexGenAds Technologies Pvt. Ltd.
-- **Location**: Tamil Nadu, India
+- **Name**: Semmozhiyan NS
+- **Known Names / Aliases**: Semmozhiyan N S, Semmozhi, semmozhiyan-dev
+- **Title**: Site Reliability Engineer and Founder & CEO of EKSISAI
+- **Current Role**: Site Reliability Engineer at NexGenAds Technologies Pvt. Ltd. (current as of 2026)
+- **Founder Role**: Founder & CEO of EKSISAI
+- **Location**: Coimbatore, Tamil Nadu, India
 - **Coordinates**: Latitude 11.1271° N, Longitude 78.6569° E
 - **Website**: https://portfolio.vendore.tech
 - **GitHub**: https://github.com/semmozhiyan-dev
-- **LinkedIn**: https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/
+- **LinkedIn**: https://www.linkedin.com/in/semmozhiyan/
 - **Email**: semmozhiyan40@gmail.com
 
 ## Professional Role at NexGenAds Technologies Pvt. Ltd.
-As a Site Reliability Engineer (SRE), Semmozhiyan focuses on maintaining the durability, uptime, and deployment agility of business-critical web applications and microservices.
+As a Site Reliability Engineer, Semmozhiyan NS supports the reliability and operational stability of web applications and backend services.
 Key responsibilities include:
-- Supporting operational stability and health metrics of web applications and backend systems.
-- Maintaining continuous integration and deployment (CI/CD) pipelines.
-- Infrastructure configuration, containerization with Docker, and orchestrating services.
-- Application performance monitoring, metrics visualization, log auditing, and rapid incident triage.
-- Working alongside product teams to ensure high availability and resilient production readiness.
+- Supporting application health, deployment workflows, and application environments.
+- Working with infrastructure configuration and CI/CD pipelines.
+- Monitoring applications, investigating issues, and troubleshooting service failures.
+- Collaborating with development teams to improve deployment consistency and production readiness.
+- Contributing to performance optimization, incident investigation, and operational improvements.
 
-### Key NexGenAds Platforms Under SRE Management:
-1. **1Grow**: Digital menu, ordering, and customer engagement platform for restaurants.
-2. **CRM Platform**: Business workflow automation, customer tracking, and operations centralization.
-3. **MultiMenu POS**: High-reliability billing, inventory, and point-of-sale system.
+### Professional Project Areas
+1. **Digital ordering systems** — customer ordering and menu workflows.
+2. **CRM platform** — customer relationship and operational workflows.
+3. **Point-of-sale systems** — billing and inventory workflows.
 
-## Personal Software Products Built
-1. **Foodela**: Modern food ordering platform with React, Tailwind CSS, Framer Motion, Java Spring Boot, and Supabase.
-2. **Vendora**: E-commerce platform engineered with React, Node.js, Express, and PostgreSQL.
-3. **Orivex**: Digital asset distribution engine built with Next.js, TypeScript, and Go microservices.
+## Founder & Independent Venture: EKSISAI
+- **Brand**: EKSISAI
+- **Website**: https://eksisai.in
+- **Company LinkedIn**: https://www.linkedin.com/company/eksisai/
+- **Founder & CEO**: Semmozhiyan NS
+- **Description**: EKSISAI is an independently operated technology solutions and software products brand founded and operated by Semmozhiyan NS.
+- **Operating Status**: Currently operated by Semmozhiyan NS as an individual.
+- **Boundaries**: No incorporated-company status, employee count, registered office, incorporation date, CIN/GSTIN, or shareholder information is asserted here.
 
-## Client & Colleague Testimonials
+## Personal Software Projects
+1. **Foodela**: Food ordering platform built with React, Vite, Tailwind CSS, Framer Motion, Spring Boot, and PostgreSQL.
+2. **Vendora**: Full-stack e-commerce platform built with React, Node.js, MongoDB Atlas, Razorpay, Docker, Jenkins, NGINX, Prometheus, and Grafana.
+3. **Orivex**: Subscription and revenue management platform in development, planned with Next.js, NestJS, Prisma, PostgreSQL, Redis, Docker, Kubernetes, Jenkins, Prometheus, and Grafana.
+
+## Testimonials
 - **Location**: https://portfolio.vendore.tech/#testimonials
-- **How it works**: Visitors submit their own name, role, company, star rating and written feedback through the "Leave Your Feedback" form on the homepage. Each submission is reviewed for authenticity before it is published, so every visible entry is attributable to a real person rather than being authored marketing copy.
-- **What the feedback covers**: Ownership and accountability, deployment and release discipline, incident response under pressure, and technical communication.
-- **Machine-readable form**: The published entries are also exposed as schema.org `ReviewList` / `Review` structured data, including `reviewRating`, `author` and `datePublished` for each entry.
+- **Status**: The homepage contains a testimonials section. Entries are shown only when published through the connected endpoint.
+- **Caution**: No testimonial should be represented as verified external feedback unless it has been published through that endpoint with attributable reviewer details. The knowledge files do not claim a verified reviewer count or rating average.
+
+## Technical Skills & Stack
+- **Site Reliability & Infrastructure**: Docker, Linux, NGINX, Jenkins, CI/CD automation, AWS EC2, Prometheus, Grafana, Git.
+- **Backend & Systems**: Java, Spring Boot, Node.js, Express.js, REST APIs, PostgreSQL, MongoDB.
+- **Frontend**: React, Tailwind CSS, Framer Motion, JavaScript, HTML, CSS.
+
+## Education
+- **B.E. Computer Science & Engineering**, PPG Institute of Technology — ongoing, expected 2027.
+
+## Earlier Experience
+- **Software Engineer Intern**, NexGenAds Technologies Pvt. Ltd. — completed internship, June–July 2026. This is separate from the current Site Reliability Engineer role.
 
 ## The 8 Life Lessons (From "Lessons Life Taught Me")
 1. **Patience (Not Everything Happens on My Timeline)**: Focus on consistent quality effort today rather than measuring against artificial deadlines.
@@ -47,7 +67,7 @@ Key responsibilities include:
    - *Quote*: "Failure can be expensive, but repeating it without learning is even more expensive."
 3. **Trust (Time Reveals What Words Cannot)**: Actions over time reveal character and reliability.
    - *Quote*: "Words introduce people. Consistent actions help me understand them."
-4. **Consistency (Small Actions Compound)**: Relying on automated daily discipline rather than transient bursts of motivation.
+4. **Consistency (Small Actions Compound)**: Relying on disciplined repeatable effort rather than transient bursts of motivation.
    - *Quote*: "My future is influenced not only by my biggest decisions, but also by the small ones I repeat."
 5. **People (Choose My Circle Carefully)**: Curating honest, mutually respectful relationships that promote growth.
    - *Quote*: "I don't need a large circle. I need relationships where respect and growth can exist together."

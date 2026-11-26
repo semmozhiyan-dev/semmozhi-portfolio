@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router';
 import {
   Github,
   Linkedin,
@@ -26,7 +26,6 @@ import {
   CheckCircle2,
   Cpu,
   Database,
-  Briefcase,
   Terminal,
   Activity,
   ShoppingCart,
@@ -43,6 +42,7 @@ import profileImg from './semmozhi.jpeg';
 import profileWebp from './semmozhi.webp';
 import JourneyPage from './JourneyPage.jsx';
 import LessonsPage from './LessonsPage.jsx';
+import { usePageMetadata } from './seo.js';
 
 // --- Interactive 3D Tilt Component ---
 
@@ -255,6 +255,7 @@ const Navigation = ({ activeSection, onOpenResume }) => {
 
   const navItems = [
     { id: 'about', label: 'About', href: '#about' },
+    { id: 'ventures', label: 'EKSISAI', href: '#ventures' },
     { id: 'experience', label: 'Experience', href: '#experience' },
     { id: 'projects', label: 'Projects', href: '#projects' },
     { id: 'journey', label: 'Journey', href: '#journey' },
@@ -274,17 +275,17 @@ const Navigation = ({ activeSection, onOpenResume }) => {
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
         
-        {/* Brand: The Tale Of Semmozhiyan */}
+        {/* Brand: Semmozhiyan NS */}
         <a href="#about" className="flex items-center gap-3.5 group">
           {/* <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--accent-wine)] to-[var(--accent-ruby)] flex items-center justify-center text-white shadow-wine-sm border border-white/10 group-hover:scale-105 transition-transform duration-300">
             <span className="font-serif font-black text-sm tracking-wider">S</span>
           </div> */}
           <div className="flex flex-col">
             <span className="font-serif font-bold text-base sm:text-lg tracking-wide text-[var(--text-primary)] group-hover:gradient-text transition-all">
-              The Tale Of Semmozhiyan
+              Semmozhiyan NS
             </span>
             <span className="font-mono text-[9px] tracking-widest text-[var(--text-secondary)] uppercase">
-              Site Reliability Engineer
+              SRE · Founder &amp; CEO, EKSISAI
             </span>
           </div>
         </a>
@@ -359,7 +360,7 @@ const Hero = ({ onOpenResume }) => {
               {/* Discrete Role Tag */}
               <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[var(--accent-wine)]/20 border border-[var(--border-wine)] text-xs font-mono text-[var(--accent-vibrant)] mb-8 shadow-wine-sm">
                 <Sparkles size={12} className="text-[var(--accent-ruby)]" />
-                <span>SITE RELIABILITY ENGINEER · SOFTWARE DEVELOPER</span>
+                <span>SITE RELIABILITY ENGINEER · FOUNDER &amp; CEO OF EKSISAI</span>
               </div>
 
               {/* Grand Editorial Headline */}
@@ -373,19 +374,19 @@ const Hero = ({ onOpenResume }) => {
 
               {/* Lead Text */}
               <p className="text-[var(--text-primary)] text-base sm:text-lg leading-relaxed max-w-xl font-medium mb-4">
-                Engineering reliable digital experiences. Building applications, automating deployments, and improving system reliability.
+                Site Reliability Engineer. Founder &amp; CEO of EKSISAI. Based in Coimbatore, Tamil Nadu, India.
               </p>
 
               {/* Narrative Paragraphs */}
               <div className="space-y-4 text-sm text-[var(--text-secondary)] font-light leading-relaxed max-w-xl">
                 <p>
-                  I'm a software engineer and Site Reliability Engineer focused on building dependable applications, improving deployment workflows, and maintaining reliable digital systems.
+                  I'm Semmozhiyan NS, a Site Reliability Engineer and the Founder &amp; CEO of EKSISAI. I build and work on software systems, infrastructure, automation and digital products.
                 </p>
                 <p>
                   My experience spans full-stack development, backend engineering, cloud infrastructure, CI/CD automation, monitoring, and production troubleshooting. I enjoy turning complex technical challenges into practical, scalable solutions.
                 </p>
                 <p>
-                  Currently, I'm working at <strong className="text-[var(--text-primary)] font-semibold">NexGenAds Technologies Pvt. Ltd.</strong>, contributing to projects across digital ordering, CRM, and point-of-sale systems, while continuing to build and refine my own products.
+                  Currently, I'm working at <strong className="text-[var(--text-primary)] font-semibold">NexGenAds Technologies Pvt. Ltd.</strong> as a Site Reliability Engineer, contributing to projects across digital ordering, CRM, and point-of-sale systems while continuing to build and refine my own products.
                 </p>
               </div>
             </motion.div>
@@ -420,10 +421,10 @@ const Hero = ({ onOpenResume }) => {
               className="flex flex-wrap items-center gap-4 pt-2"
             >
               <LuxuryButton href="#projects" primary icon={ArrowUpRight}>
-                Explore Projects ↗
+                Explore My Work
               </LuxuryButton>
-              <LuxuryButton href="#experience" icon={Briefcase}>
-                View Experience
+              <LuxuryButton href="https://eksisai.in" icon={ExternalLink}>
+                Explore EKSISAI
               </LuxuryButton>
               
               <div className="flex items-center gap-2 pl-2">
@@ -439,7 +440,7 @@ const Hero = ({ onOpenResume }) => {
                 </motion.a>
                 <motion.a
                   whileHover={{ y: -2 }}
-                  href="https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/"
+                  href="https://www.linkedin.com/in/semmozhiyan/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3.5 rounded-2xl bg-[#0E0B11] border border-[var(--border-subtle)] hover:border-[var(--border-wine)] text-[var(--text-secondary)] hover:text-white transition-all shadow-sm"
@@ -474,7 +475,7 @@ const Hero = ({ onOpenResume }) => {
                     <source srcSet={profileWebp} type="image/webp" />
                     <img
                       src={profileImg}
-                      alt="Semmozhiyan — Site Reliability Engineer"
+                      alt="Semmozhiyan NS — Site Reliability Engineer and Founder & CEO of EKSISAI"
                       width="720"
                       height="960"
                       fetchpriority="high"
@@ -523,7 +524,7 @@ const Hero = ({ onOpenResume }) => {
               </TiltCard3D>
 
               <div className="mt-5 text-center font-mono text-[11px] text-[var(--text-muted)]">
-                NexGenAds Technologies Pvt. Ltd. · SRE & Software Engineer
+                Site Reliability Engineer · Founder &amp; CEO of EKSISAI
               </div>
             </motion.div>
           </div>
@@ -533,6 +534,74 @@ const Hero = ({ onOpenResume }) => {
     </section>
   );
 };
+
+const FounderVentures = () => (
+  <section id="ventures" className="py-28 border-b border-[var(--border-subtle)] relative">
+    <div className="max-w-6xl mx-auto px-6">
+      <SectionHeader
+        number="00"
+        subtitle="Independent Brand & Product Work"
+        title="Founder & Ventures"
+      />
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+      >
+        <TiltCard3D className="p-8 sm:p-10 border border-[var(--border-wine)]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-wine)]/30 border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-[10px] uppercase tracking-wider mb-4">
+                Founder &amp; CEO
+              </div>
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--text-primary)] mb-4">
+                EKSISAI
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light mb-3 max-w-2xl">
+                EKSISAI is an independently operated technology solutions and software products brand founded and operated by Semmozhiyan NS.
+              </p>
+              <p className="text-xs text-[var(--text-muted)] font-light max-w-2xl">
+                Currently operated by Semmozhiyan NS as an individual.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <a
+                href="https://eksisai.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-[#0E0B11]/80 border border-[var(--border-subtle)] hover:border-[var(--border-wine)] transition-all text-xs font-mono text-[var(--text-primary)]"
+              >
+                <span>Visit EKSISAI</span>
+                <ExternalLink size={14} className="text-[var(--accent-ruby)]" />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/eksisai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-[#0E0B11]/80 border border-[var(--border-subtle)] hover:border-[var(--border-wine)] transition-all text-xs font-mono text-[var(--text-primary)]"
+              >
+                <span>Company LinkedIn</span>
+                <ExternalLink size={14} className="text-[var(--accent-ruby)]" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/semmozhiyan/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-[#0E0B11]/80 border border-[var(--border-subtle)] hover:border-[var(--border-wine)] transition-all text-xs font-mono text-[var(--text-primary)]"
+              >
+                <span>Semmozhiyan on LinkedIn</span>
+                <ExternalLink size={14} className="text-[var(--accent-ruby)]" />
+              </a>
+            </div>
+          </div>
+        </TiltCard3D>
+      </motion.div>
+    </div>
+  </section>
+);
 
 // --- Professional Experience Section ---
 
@@ -602,7 +671,7 @@ const ProfessionalExperience = () => {
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-wine)]/30 border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-[10px] uppercase tracking-wider mb-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)] animate-pulse" />
-                  Current Role
+                  Current Role · 2026
                 </div>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
                   Site Reliability Engineer
@@ -656,6 +725,61 @@ const ProfessionalExperience = () => {
             </div>
           </TiltCard3D>
         </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
+          {[
+            {
+              label: 'Previous Internship',
+              title: 'Software Engineer Intern',
+              org: 'NexGenAds Technologies Pvt. Ltd.',
+              meta: 'June–July 2026 · completed internship',
+            },
+            {
+              label: 'Founder & CEO',
+              title: 'EKSISAI',
+              org: 'Independently operated technology solutions and software products brand',
+              meta: 'Founded and operated by Semmozhiyan NS',
+              href: 'https://eksisai.in',
+            },
+            {
+              label: 'Education',
+              title: 'B.E. Computer Science & Engineering',
+              org: 'PPG Institute of Technology',
+              meta: 'Ongoing · expected 2027',
+            },
+          ].map((item, i) => {
+            const Wrapper = item.href ? 'a' : 'div';
+            return (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.6 }}
+              >
+                <Wrapper
+                  {...(item.href ? { href: item.href, target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="block h-full"
+                >
+                  <TiltCard3D className="p-6 h-full">
+                    <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent-vibrant)]">
+                      {item.label}
+                    </span>
+                    <h4 className="font-serif text-base font-bold text-[var(--text-primary)] mt-3 mb-2">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-[var(--text-secondary)] font-light leading-relaxed mb-3">
+                      {item.org}
+                    </p>
+                    <p className="font-mono text-[10px] text-[var(--text-muted)]">
+                      {item.meta}
+                    </p>
+                  </TiltCard3D>
+                </Wrapper>
+              </motion.div>
+            );
+          })}
+        </div>
 
         {/* Professional Projects at NexGenAds */}
         <div>
@@ -722,10 +846,10 @@ const PersonalProjects = () => {
       title: 'Foodela',
       badge: 'FOOD ORDERING PLATFORM',
       desc: 'A food ordering application built with a modern frontend and backend architecture to deliver a responsive browsing and ordering experience.',
-      stack: ['React', 'Tailwind CSS', 'Framer Motion', 'Java Spring Boot', 'Supabase'],
+      stack: ['React', 'Vite', 'Tailwind CSS', 'Framer Motion', 'Spring Boot', 'PostgreSQL'],
       links: {
-        demo: 'https://github.com/semmozhiyan-dev',
-        code: 'https://github.com/semmozhiyan-dev',
+        demo: null,
+        code: 'https://github.com/semmozhiyan-dev/Foodela',
         caseStudy: null
       },
       icon: Utensils
@@ -736,8 +860,8 @@ const PersonalProjects = () => {
       desc: 'A full-stack e-commerce platform featuring product discovery, user authentication, shopping carts, order management, and payment integration.',
       stack: ['React', 'Vite', 'Node.js', 'Express.js', 'MongoDB Atlas', 'Razorpay'],
       links: {
-        demo: 'https://github.com/semmozhiyan-dev',
-        code: 'https://github.com/semmozhiyan-dev',
+        demo: null,
+        code: 'https://github.com/semmozhiyan-dev/Vendora',
         caseStudy: null
       },
       icon: ShoppingCart
@@ -750,7 +874,7 @@ const PersonalProjects = () => {
       stack: ['Next.js', 'NestJS', 'Prisma', 'PostgreSQL', 'Redis', 'Docker', 'Kubernetes', 'Jenkins', 'Prometheus', 'Grafana'],
       links: {
         demo: null,
-        code: 'https://github.com/semmozhiyan-dev',
+        code: null,
         caseStudy: null
       },
       icon: CreditCard
@@ -888,11 +1012,11 @@ const JourneyPreview = () => {
       <div className="max-w-6xl mx-auto px-6">
         <SectionHeader
           number="03"
-          subtitle="The Road to Building Something of My Own"
-          title="The Journey & Founder Ambition"
+          subtitle="Engineering, Growth & Independent Product Building"
+          title="The Journey"
         />
 
-        {/* Founder Ambition Lead Card */}
+        {/* Journey Lead Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -905,15 +1029,15 @@ const JourneyPreview = () => {
               <div className="lg:col-span-8 space-y-5">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-wine)]/25 border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-[10px] uppercase tracking-wider">
                   <Sparkles size={11} className="text-[var(--accent-ruby)]" />
-                  <span>A PERSONAL STORY · AN EVOLVING VISION</span>
+                  <span>A PERSONAL STORY · AN EVOLVING PRACTICE</span>
                 </div>
 
                 <h3 className="font-serif text-2xl sm:text-4xl font-bold text-[var(--text-primary)] leading-snug">
-                  Learn First. Build Experience. Create Something of My Own.
+                  Learn First. Build Reliably. Grow Independently.
                 </h3>
 
                 <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light max-w-2xl">
-                  My long-term ambition is to build a technology startup of my own. I don't want to rush into entrepreneurship without understanding what it takes to build a sustainable business. My plan is to gain experience in the industry, strengthen my technical skills, learn from real business problems, and build financial stability before taking that step.
+                  My path has moved from learning software engineering to working as a Site Reliability Engineer and founding EKSISAI, an independently operated technology solutions and software products brand. I continue to build experience in reliable systems, real business problems, and sustainable product work.
                 </p>
 
                 <div className="pt-2">
@@ -921,7 +1045,7 @@ const JourneyPreview = () => {
                     to="/journey"
                     className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[var(--accent-wine)] to-[var(--accent-ruby)] text-white font-mono text-xs font-bold tracking-widest uppercase shadow-wine-md hover:shadow-wine-lg transition-all"
                   >
-                    <span>Read the Full Journey Manifesto</span>
+                    <span>Read the Full Journey</span>
                     <ArrowRight size={14} />
                   </Link>
                 </div>
@@ -1428,8 +1552,8 @@ const Testimonials = () => {
       <div className="max-w-6xl mx-auto px-6">
         <SectionHeader
           number="05"
-          subtitle="Feedback From Clients & Colleagues"
-          title="Testimonials & Trusted Endorsements"
+          subtitle="Published Feedback"
+          title="Testimonials"
         />
 
         {/* Lead Narrative Card */}
@@ -1445,15 +1569,15 @@ const Testimonials = () => {
               <div className="lg:col-span-8 space-y-5">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color-mix(in_srgb,var(--accent-wine)_25%,transparent)] border border-[var(--border-wine)] text-[var(--accent-vibrant)] font-mono text-[10px] uppercase tracking-wider">
                   <MessageSquareQuote size={11} className="text-[var(--accent-ruby)]" />
-                  <span>RECOMMENDATIONS · VERBATIM FEEDBACK</span>
+                  <span>PUBLISHED FEEDBACK</span>
                 </div>
 
                 <h3 className="font-serif text-2xl sm:text-4xl font-bold text-[var(--text-primary)] leading-snug">
-                  The work speaks. <span className="gradient-text italic font-normal">So do the people</span> who were there for it.
+                  The work speaks. <span className="gradient-text italic font-normal">Published feedback</span> appears here when received.
                 </h3>
 
                 <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light max-w-2xl">
-                  Testimonials are the closest thing to an honest report card. Below are the words clients and colleagues left after working with me — on releases that landed, on incidents that were handled, and on the way the work was carried.
+                  This section shows feedback published through the testimonials endpoint. Entries appear here only after they are submitted and approved, with the reviewer's own name, role, and written feedback.
                 </p>
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -1462,7 +1586,7 @@ const Testimonials = () => {
                       {stars(ratedTestimonials.length ? Math.round(Number(averageRating)) : 0)}
                     </div>
                     <span className="font-mono text-xs text-[var(--text-secondary)]">
-                      {averageRating} average
+                      {ratedTestimonials.length ? `${averageRating} average` : 'No ratings yet'}
                     </span>
                   </div>
 
@@ -1574,7 +1698,7 @@ const Testimonials = () => {
                 No Testimonials Published Yet
               </h4>
               <p className="text-xs text-[var(--text-secondary)] font-light max-w-lg mx-auto leading-relaxed">
-                Every entry is reviewed before it goes live, so this space stays genuine. If you have worked with me, be the first to leave a note below.
+                No testimonials are published yet. If you have worked with me, you can leave a note below.
               </p>
               <a
                 href="#leave-feedback"
@@ -1620,7 +1744,7 @@ const Testimonials = () => {
                             {t.name}
                           </div>
                           <div className="font-mono text-[10px] text-[var(--text-muted)] truncate">
-                            {[t.role, t.company].filter(Boolean).join(' · ') || 'Verified Reviewer'}
+                            {[t.role, t.company].filter(Boolean).join(' · ') || 'Reviewer'}
                           </div>
                         </div>
                         {formatTestimonialDate(t.date) && (
@@ -1829,7 +1953,7 @@ const Testimonials = () => {
                     'Submit your name, role and feedback',
                     'Every entry is reviewed for authenticity',
                     'Approved entries appear here automatically',
-                    'Star ratings reflect real working experience'
+                    'Star ratings are shown only on published entries'
                   ].map((item, index) => (
                     <li key={item} className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-ruby)]" />
@@ -1907,7 +2031,7 @@ const Contact = () => {
             <div className="space-y-3 pt-2">
               {[
                 { icon: Mail, label: 'Direct Email', value: 'semmozhiyan40@gmail.com', href: 'mailto:semmozhiyan40@gmail.com' },
-                { icon: Linkedin, label: 'LinkedIn Network', value: 'Semmozhiyan N S', href: 'https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/' },
+                { icon: Linkedin, label: 'LinkedIn Network', value: 'Semmozhiyan NS', href: 'https://www.linkedin.com/in/semmozhiyan/' },
                 { icon: Github, label: 'GitHub Repositories', value: '@semmozhiyan-dev', href: 'https://github.com/semmozhiyan-dev' },
               ].map((item, i) => (
                 <a
@@ -1957,7 +2081,7 @@ const Contact = () => {
                   id="contact-form"
                   name="contact_semmozhiyan"
                   data-webmcp-tool="contact_semmozhiyan"
-                  data-webmcp-description="Contact Semmozhiyan N S regarding Site Reliability Engineering roles, cloud architecture, or software engineering."
+                  data-webmcp-description="Contact Semmozhiyan NS regarding Site Reliability Engineering roles, EKSISAI, or software engineering."
                   className="space-y-6"
                   action="https://formspree.io/f/mwpbjoad"
                   method="POST"
@@ -2040,11 +2164,11 @@ const Footer = () => (
             <span className="font-serif font-black text-xs">S</span>
           </div>
           <span className="font-serif font-bold text-base tracking-wide text-[var(--text-primary)]">
-            The Tale Of Semmozhiyan
+            Semmozhiyan NS
           </span>
         </div>
         <p className="font-mono text-xs text-[var(--text-muted)]">
-          Site Reliability Engineer · NexGenAds Technologies Pvt. Ltd.
+          Site Reliability Engineer · Founder &amp; CEO of EKSISAI
         </p>
       </div>
 
@@ -2058,7 +2182,7 @@ const Footer = () => (
         <a href="https://github.com/semmozhiyan-dev" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-primary)] transition-colors">
           GitHub
         </a>
-        <a href="https://www.linkedin.com/in/semmozhiyan-n-s-aa7478296/" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-primary)] transition-colors">
+        <a href="https://www.linkedin.com/in/semmozhiyan/" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-primary)] transition-colors">
           LinkedIn
         </a>
         <a href="mailto:semmozhiyan40@gmail.com" className="hover:text-[var(--text-primary)] transition-colors">
@@ -2084,13 +2208,14 @@ const CommandPalette = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   const actions = [
-    { id: 'about', label: 'About & Introduction', href: '/#about', desc: 'Building Reliable Software. Engineering for Scale.' },
+    { id: 'about', label: 'About & Introduction', href: '/#about', desc: 'Semmozhiyan NS — Site Reliability Engineer and founder' },
+    { id: 'ventures', label: 'Founder & Ventures', href: '/#ventures', desc: 'EKSISAI — independently operated technology brand' },
     { id: 'experience', label: 'Professional Experience', href: '/#experience', desc: 'NexGenAds Technologies · SRE Role & Projects' },
     { id: 'projects', label: 'Personal Projects', href: '/#projects', desc: 'Foodela, Vendora & Orivex product suite' },
-    { id: 'journey', label: 'The Journey & Ambition', href: '/journey', desc: 'The road to building something of my own' },
+    { id: 'journey', label: 'The Journey', href: '/journey', desc: 'Engineering, growth and independent product building' },
     { id: 'lessons', label: 'Lessons Life Taught Me', href: '/lessons', desc: 'Patience, failure, consistency, and 8 life lessons' },
-    { id: 'testimonials', label: 'Testimonials & Endorsements', href: '/#testimonials', desc: 'What clients and colleagues say about the work' },
-    { id: 'contact', label: 'Direct Transmission', href: '/#contact', desc: 'Connect with Semmozhiyan' },
+    { id: 'testimonials', label: 'Testimonials', href: '/#testimonials', desc: 'Feedback published through the testimonials endpoint' },
+    { id: 'contact', label: 'Direct Transmission', href: '/#contact', desc: 'Connect with Semmozhiyan NS' },
   ];
 
   const filtered = actions.filter(a =>
@@ -2284,11 +2409,7 @@ const FloatingActions = ({ onOpenCmd, onOpenResume }) => {
 // --- Home Page Component ---
 
 const HomePage = ({ onOpenResume }) => {
-  React.useEffect(() => {
-    document.title = "The Tale Of Semmozhiyan | Site Reliability Engineer & Software Developer";
-  }, []);
-
-  const activeSection = useActiveSection(['about', 'experience', 'projects', 'journey', 'lessons', 'testimonials', 'contact']);
+  const activeSection = useActiveSection(['about', 'ventures', 'experience', 'projects', 'journey', 'lessons', 'testimonials', 'contact']);
 
   return (
     <>
@@ -2299,6 +2420,7 @@ const HomePage = ({ onOpenResume }) => {
 
       <main>
         <Hero onOpenResume={onOpenResume} />
+        <FounderVentures />
         <ProfessionalExperience />
         <PersonalProjects />
         <JourneyPreview />
@@ -2317,6 +2439,7 @@ const HomePage = ({ onOpenResume }) => {
 const App = () => {
   const [isCmdOpen, setIsCmdOpen] = React.useState(false);
   const [isResumeOpen, setIsResumeOpen] = React.useState(false);
+  usePageMetadata();
 
   React.useEffect(() => {
     const handleKeyDown = (e) => {

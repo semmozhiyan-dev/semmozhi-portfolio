@@ -2,6 +2,22 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/journey",
+      "destination": "/journey.html"
+    },
+    {
+      "source": "/journey/",
+      "destination": "/journey.html"
+    },
+    {
+      "source": "/lessons",
+      "destination": "/lessons.html"
+    },
+    {
+      "source": "/lessons/",
+      "destination": "/lessons.html"
+    },
+    {
       "source": "/((?!assets/|\\.well-known/|.*\\..*).*)",
       "destination": "/index.html"
     }
