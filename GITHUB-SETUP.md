@@ -109,7 +109,7 @@ portfolio/
 ## 🌐 Expected URLs
 - **GitHub Repository:** `https://github.com/semmozhi-ctrl/portfolio`
 - **GitHub Pages:** `https://semmozhi-ctrl.github.io/portfolio`
-- **Vercel (next step):** `https://portfolio-semmozhi.vercel.app`
+- **Vercel (next step):** `https://portfolio.vendore.tech`
 
 ## ✅ Success Checklist
 - [ ] GitHub repository created

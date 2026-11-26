@@ -87,7 +87,7 @@
 
 ## 🌐 Expected Results
 
-**Your live URL:** `https://portfolio-semmozhi.vercel.app`
+**Your live URL:** `https://portfolio.vendore.tech`
 
 **Features:**
 - ⚡ Lightning fast loading
@@ -128,7 +128,7 @@
 
 ## 🆔 Your Portfolio URLs
 
-- **Live Site:** `https://portfolio-semmozhi.vercel.app`
+- **Live Site:** `https://portfolio.vendore.tech`
 - **GitHub Repo:** `https://github.com/semmozhi-ctrl/portfolio`
 - **Vercel Dashboard:** Access through vercel.com
 

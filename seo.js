@@ -125,6 +125,17 @@ const projectsNode = {
         author: { '@id': PERSON_ID },
       },
     },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      item: {
+        '@type': 'SoftwareApplication',
+        name: 'Orivex',
+        description:
+          'A subscription and revenue management platform in development, planned with Next.js, NestJS, Prisma, PostgreSQL, Redis, Docker, Kubernetes, Jenkins, Prometheus and Grafana.',
+        author: { '@id': PERSON_ID },
+      },
+    },
   ],
 }
 

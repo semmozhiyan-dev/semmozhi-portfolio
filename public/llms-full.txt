@@ -40,9 +40,9 @@ Key responsibilities include:
 - **Boundaries**: No incorporated-company status, employee count, registered office, incorporation date, CIN/GSTIN, or shareholder information is asserted here.
 
 ## Personal Software Projects
-1. **Foodela**: Food ordering platform built with React, Vite, Tailwind CSS, Framer Motion, Spring Boot, and PostgreSQL.
-2. **Vendora**: Full-stack e-commerce platform built with React, Node.js, MongoDB Atlas, Razorpay, Docker, Jenkins, NGINX, Prometheus, and Grafana.
-3. **Orivex**: Subscription and revenue management platform in development, planned with Next.js, NestJS, Prisma, PostgreSQL, Redis, Docker, Kubernetes, Jenkins, Prometheus, and Grafana.
+1. **Foodela**: A full-stack food ordering project built with React, Spring Boot and PostgreSQL.
+2. **Vendora**: A full-stack e-commerce project built with React, Node.js, MongoDB Atlas and Razorpay.
+3. **Orivex**: A subscription and revenue management platform in development, planned with Next.js, NestJS, Prisma, PostgreSQL, Redis, Docker, Kubernetes, Jenkins, Prometheus and Grafana.
 
 ## Testimonials
 - **Location**: https://portfolio.vendore.tech/#testimonials

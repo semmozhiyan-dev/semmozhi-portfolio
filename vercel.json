@@ -28,10 +28,6 @@
     {
       "source": "/lessons/",
       "destination": "/lessons.html"
-    },
-    {
-      "source": "/((?!assets/|\\.well-known/|.*\\..*).*)",
-      "destination": "/index.html"
     }
   ]
 }
