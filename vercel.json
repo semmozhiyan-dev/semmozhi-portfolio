@@ -1,5 +1,17 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/journey/",
+      "destination": "/journey",
+      "permanent": true
+    },
+    {
+      "source": "/lessons/",
+      "destination": "/lessons",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/journey",
